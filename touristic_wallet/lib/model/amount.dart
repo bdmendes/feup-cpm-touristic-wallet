@@ -1,6 +1,8 @@
+const currencies = ['USD', 'EUR', 'GBP', 'CHF', 'JPY', 'CNY', 'RUB'];
+
 class Amount {
   int? id;
-  double value;
+  final double value;
   final String currency;
 
   Amount(this.value, String currency, {this.id})

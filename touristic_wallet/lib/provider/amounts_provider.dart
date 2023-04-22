@@ -12,7 +12,7 @@ class AmountsProvider extends ChangeNotifier {
   Future<void> loadAmountsFromStorage() async {
     // TODO: Get from the database
     final amounts = await Future.delayed(
-      const Duration(seconds: 3),
+      const Duration(seconds: 1),
       () => [
         Amount(10, 'EUR'),
         Amount(20, 'EUR'),
@@ -32,8 +32,14 @@ class AmountsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void editAmountValue(Amount amount, double newValue) {
-    amount.value = newValue;
-    notifyListeners();
+  void replaceAmount(Amount oldAmount, Amount newAmount) {
+    for (int i = 0; i < _amounts.length; i++) {
+      if (_amounts[i] == oldAmount) {
+        _amounts.removeAt(i);
+        _amounts.insert(i, newAmount);
+        notifyListeners();
+        break;
+      }
+    }
   }
 }

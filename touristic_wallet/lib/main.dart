@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:touristic_wallet/provider/amounts_provider.dart';
+import 'package:touristic_wallet/view/home/amount_dialog.dart';
 import 'package:touristic_wallet/view/home/home_page.dart';
 import 'package:touristic_wallet/view/statistics/statistics_page.dart';
 
@@ -53,9 +54,10 @@ class MyAppPageState extends State<MyAppPage> {
       floatingActionButton: selectedPageIndex == 0
           ? FloatingActionButton(
               onPressed: () {
-                final amountsProvider =
-                    Provider.of<AmountsProvider>(context, listen: false);
-                amountsProvider.addAmount(Amount(10, 'EUR'));
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) => const AmountDialog());
               },
               child: const Icon(Icons.add),
             )
