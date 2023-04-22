@@ -5,11 +5,12 @@ import 'package:touristic_wallet/view/home/amount_dialog.dart';
 import 'package:touristic_wallet/view/home/home_page.dart';
 import 'package:touristic_wallet/view/statistics/statistics_page.dart';
 
-import 'model/amount.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
   final amountsProvider = AmountsProvider();
-  amountsProvider.loadAmountsFromStorage();
+  await amountsProvider.loadAmountsFromStorage();
+
   runApp(
     ChangeNotifierProvider(
         create: (_) => amountsProvider, child: const MyApp()),
