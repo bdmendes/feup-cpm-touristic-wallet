@@ -3,13 +3,14 @@ import 'package:sqflite/sqflite.dart';
 
 abstract class DatabaseProvider extends ChangeNotifier {
   final String _databaseCreationScript;
+  final String _databaseName;
   late final dynamic database;
 
-  DatabaseProvider(this._databaseCreationScript);
+  DatabaseProvider(this._databaseName, this._databaseCreationScript);
 
   Future<void> initDatabase() async {
     database = await openDatabase(
-      'touristic_wallet.db',
+      _databaseName,
       onCreate: (db, version) {
         return db.execute(_databaseCreationScript);
       },

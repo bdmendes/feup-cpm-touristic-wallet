@@ -1,13 +1,15 @@
 import 'dart:collection';
 
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:touristic_wallet/provider/database_provider.dart';
 
 import '../model/amount.dart';
+import 'exchange_rates_provider.dart';
 
 class AmountsProvider extends DatabaseProvider {
   AmountsProvider()
-      : super(
+      : super('amounts.db',
             'CREATE TABLE amounts (id INTEGER PRIMARY KEY, amount REAL, currency TEXT)');
 
   List<Amount> _amounts = [];
@@ -71,5 +73,25 @@ class AmountsProvider extends DatabaseProvider {
         break;
       }
     }
+  }
+
+  Future<double> getTotalAmount(
+      String currency, ExchangeRatesProvider exchangeRatesProvider) async {
+    var totalAmount = 0.0;
+
+    for (final amount in _amounts) {
+      if (amount.currency == currency) {
+        totalAmount += amount.value;
+        continue;
+      }
+
+      final exchangeRate = await exchangeRatesProvider.getExchangeRate(
+          amount.currency, currency);
+      if (exchangeRate != null) {
+        totalAmount += amount.value * exchangeRate.rate;
+      }
+    }
+
+    return totalAmount;
   }
 }

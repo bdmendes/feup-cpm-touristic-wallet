@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:touristic_wallet/provider/amounts_provider.dart';
+import 'package:touristic_wallet/provider/exchange_rates_provider.dart';
 import 'package:touristic_wallet/view/home/amount_dialog.dart';
 import 'package:touristic_wallet/view/home/home_page.dart';
 import 'package:touristic_wallet/view/statistics/statistics_page.dart';
@@ -11,9 +12,14 @@ void main() async {
   final amountsProvider = AmountsProvider();
   await amountsProvider.loadAmountsFromStorage();
 
+  final exchangeRatesProvider = ExchangeRatesProvider();
+  await exchangeRatesProvider.initDatabase();
+
   runApp(
-    ChangeNotifierProvider(
-        create: (_) => amountsProvider, child: const MyApp()),
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => exchangeRatesProvider),
+      ChangeNotifierProvider(create: (_) => amountsProvider),
+    ], child: const MyApp()),
   );
 }
 
