@@ -1,22 +1,63 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../model/amount.dart';
+import '../../provider/amounts_provider.dart';
+import '../../provider/exchange_rates_provider.dart';
+
+class StatisticsBarChart extends StatefulWidget {
+  const StatisticsBarChart({super.key});
+
+  @override
+  State<StatefulWidget> createState() => StatisticsBarChartState();
+}
+
+class StatisticsBarChartState extends State<StatisticsBarChart> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer2<AmountsProvider, ExchangeRatesProvider>(
+        builder: (context, amountsProvider, exchangeRatesProvider, child) {
+          return AspectRatio(
+              aspectRatio: 1.6,
+              child: _BarChart(amountsProvider, exchangeRatesProvider)
+          );
+        }
+    );
+  }
+}
 
 class _BarChart extends StatelessWidget {
-  const _BarChart({super.key});
+  const _BarChart(this.amountsProvider, this.exchangeRatesProvider);
+
+  final AmountsProvider amountsProvider;
+  final ExchangeRatesProvider exchangeRatesProvider;
 
   @override
   Widget build(BuildContext context) {
-    return BarChart(
-      BarChartData(
-        barTouchData: barTouchData,
-        titlesData: titlesData,
-        borderData: borderData,
-        barGroups: barGroups,
-        gridData: FlGridData(show: false),
-        alignment: BarChartAlignment.spaceAround,
-        maxY: 20,
-      ),
-    );
+    return FutureBuilder(
+        builder:  (context, snapshot) {
+          if (snapshot.hasData) {
+            return BarChart(
+              BarChartData(
+                barTouchData: barTouchData,
+                titlesData: titlesData,
+                borderData: borderData,
+                barGroups: getBarGroups(snapshot.data!),
+                gridData: FlGridData(show: false),
+                alignment: BarChartAlignment.spaceAround,
+                maxY: snapshot.data!.values.reduce(max) * 1.2,
+              ),
+            );
+          } else {
+            return const Text(
+              'Total: Unknown123',
+              style: TextStyle(fontSize: 20),
+            );
+          }
+        },
+      future: amountsProvider.getExchangeAmounts(exchangeRatesProvider));
   }
 
   BarTouchData get barTouchData => BarTouchData(
@@ -48,37 +89,10 @@ class _BarChart extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    String text;
-    switch (value.toInt()) {
-      case 0:
-        text = 'Mn';
-        break;
-      case 1:
-        text = 'Te';
-        break;
-      case 2:
-        text = 'Wd';
-        break;
-      case 3:
-        text = 'Tu';
-        break;
-      case 4:
-        text = 'Fr';
-        break;
-      case 5:
-        text = 'St';
-        break;
-      case 6:
-        text = 'Sn';
-        break;
-      default:
-        text = '';
-        break;
-    }
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 4,
-      child: Text(text, style: style),
+      child: Text(amountsProvider.amounts[value.toInt()].currency, style: style),
     );
   }
 
@@ -115,93 +129,19 @@ class _BarChart extends StatelessWidget {
     end: Alignment.topCenter,
   );
 
-  List<BarChartGroupData> get barGroups => [
-    BarChartGroupData(
-      x: 0,
-      barRods: [
-        BarChartRodData(
-          toY: 8,
-          gradient: _barsGradient,
+  List<BarChartGroupData> getBarGroups(Map<String, double> exchangeAmounts) {
+    return List<BarChartGroupData>.generate(
+        amountsProvider.amounts.length,
+            (index) => BarChartGroupData(
+          x: index,
+          barRods: [
+            BarChartRodData(
+              toY: exchangeAmounts[amountsProvider.amounts[index].currency]!,
+              gradient: _barsGradient,
+            )
+          ],
+          showingTooltipIndicators: [0],
         )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 1,
-      barRods: [
-        BarChartRodData(
-          toY: 10,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 2,
-      barRods: [
-        BarChartRodData(
-          toY: 14,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 3,
-      barRods: [
-        BarChartRodData(
-          toY: 15,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 4,
-      barRods: [
-        BarChartRodData(
-          toY: 13,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 5,
-      barRods: [
-        BarChartRodData(
-          toY: 10,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 6,
-      barRods: [
-        BarChartRodData(
-          toY: 16,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-  ];
-}
-
-class BarChartSample3 extends StatefulWidget {
-  const BarChartSample3({super.key});
-
-  @override
-  State<StatefulWidget> createState() => BarChartSample3State();
-}
-
-class BarChartSample3State extends State<BarChartSample3> {
-  @override
-  Widget build(BuildContext context) {
-    return const AspectRatio(
-      aspectRatio: 1.6,
-      child: _BarChart(),
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:touristic_wallet/view/common/total_amount_indicator.dart';
 import 'package:touristic_wallet/view/statistics/bar_chart.dart';
@@ -15,15 +14,14 @@ class StatisticsPage extends StatelessWidget {
     return Column(
       children: [
         const TotalAmountIndicator(),
-        Expanded(child:
-        PageView(
-          controller: controller,
-          children: const <Widget>[
-            BarChartSample3(),
-            PieChartSample2()
-          ],
+        Expanded(child: PageView(
+              controller: controller,
+              children: const <Widget>[
+                StatisticsBarChart(),
+                StatisticsPieChart()
+              ],
+            )
         ),
-        )
       ],
     );
   }

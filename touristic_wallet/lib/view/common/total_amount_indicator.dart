@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:touristic_wallet/model/amount.dart';
@@ -16,26 +15,8 @@ class TotalAmountIndicator extends StatefulWidget {
 }
 
 class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
-  String _toCurrency = 'EUR';
-
   @override
   Widget build(BuildContext context) {
-    final currencySelector = DropdownButton<String>(
-      value: _toCurrency,
-      onChanged: (String? newValue) {
-        setState(() {
-          _toCurrency = newValue!;
-        });
-      },
-      items: currencies
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value, style: const TextStyle(fontSize: 20)),
-        );
-      }).toList(),
-    );
-
     return Consumer2<AmountsProvider, ExchangeRatesProvider>(
       builder: (context, amountsProvider, exchangeRatesProvider, child) {
         final lastUpdate = exchangeRatesProvider.getLastUpdateTime();
@@ -51,9 +32,23 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
               if (snapshot.hasData) {
                 return Column(
                   children: [
-                    currencySelector,
+                    DropdownButton<String>(
+                      value: amountsProvider.currency,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          amountsProvider.currency = newValue!;
+                        });
+                      },
+                      items: currencies
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value, style: const TextStyle(fontSize: 20)),
+                        );
+                      }).toList(),
+                    ),
                     Text(
-                      'Total: ${snapshot.data} $_toCurrency',
+                      'Total: ${snapshot.data} ${amountsProvider.currency}',
                       style: const TextStyle(fontSize: 20),
                     ),
                     Text("Last update: $lastUpdate"),
@@ -66,8 +61,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                 );
               }
             },
-            future: amountsProvider.getTotalAmount(
-                _toCurrency, Provider.of<ExchangeRatesProvider>(context)));
+            future: amountsProvider.getTotalAmount(exchangeRatesProvider));
       },
     );
   }

@@ -1,6 +1,4 @@
 import 'dart:collection';
-
-import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:touristic_wallet/provider/database_provider.dart';
 
@@ -13,6 +11,13 @@ class AmountsProvider extends DatabaseProvider {
             'CREATE TABLE amounts (id INTEGER PRIMARY KEY, amount REAL, currency TEXT)');
 
   List<Amount> _amounts = [];
+
+  String _currency = 'EUR';
+  String get currency => _currency;
+  set currency(String toCurrency) {
+    _currency = toCurrency;
+    notifyListeners();
+  }
 
   UnmodifiableListView<Amount> get amounts => UnmodifiableListView(_amounts);
 
@@ -75,23 +80,40 @@ class AmountsProvider extends DatabaseProvider {
     }
   }
 
-  Future<double> getTotalAmount(
-      String currency, ExchangeRatesProvider exchangeRatesProvider) async {
+  Future<double> getTotalAmount(ExchangeRatesProvider exchangeRatesProvider) async {
     var totalAmount = 0.0;
 
     for (final amount in _amounts) {
-      if (amount.currency == currency) {
+      if (amount.currency == _currency) {
         totalAmount += amount.value;
         continue;
       }
 
       final exchangeRate = await exchangeRatesProvider.getExchangeRate(
-          amount.currency, currency);
+          amount.currency, _currency);
       if (exchangeRate != null) {
         totalAmount += amount.value * exchangeRate.rate;
       }
     }
 
     return totalAmount;
+  }
+
+  Future<Map<String, double>> getExchangeAmounts(ExchangeRatesProvider exchangeRatesProvider) async {
+    var exchangeAmounts = <String, double>{};
+
+    for (final amount in _amounts) {
+      if (amount.currency == _currency) {
+        exchangeAmounts[_currency] = amount.value;
+        continue;
+      }
+      final exchangeRate = await exchangeRatesProvider.getExchangeRate(
+          amount.currency, _currency);
+      if (exchangeRate != null) {
+        exchangeAmounts[amount.currency] = amount.value * exchangeRate.rate;
+      }
+    }
+
+    return exchangeAmounts;
   }
 }
