@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../model/amount.dart';
 import '../../provider/amounts_provider.dart';
 import '../../provider/exchange_rates_provider.dart';
 

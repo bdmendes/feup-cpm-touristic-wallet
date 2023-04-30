@@ -15,93 +15,74 @@ class StatisticsPieChartState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.3,
-      child: Row(
+    return Column(
         children: <Widget>[
-          const SizedBox(
-            height: 18,
-          ),
           Expanded(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex = pieTouchResponse
-                            .touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 40,
-                  sections: showingSections(),
+            child: PieChart(
+              PieChartData(
+                pieTouchData: PieTouchData(
+                  touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                    setState(() {
+                      if (!event.isInterestedForInteractions ||
+                          pieTouchResponse == null ||
+                          pieTouchResponse.touchedSection == null) {
+                        touchedIndex = -1;
+                        return;
+                      }
+                      touchedIndex = pieTouchResponse
+                          .touchedSection!.touchedSectionIndex;
+                    });
+                  },
                 ),
+                borderData: FlBorderData(
+                  show: false,
+                ),
+                sectionsSpace: 5,
+                centerSpaceRadius: 50,
+                sections: showingSections(),
               ),
             ),
           ),
-          const Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const Wrap(
+            spacing: 12.0, // gap between adjacent chips
+            runSpacing: 8.0, // gap between lines
+            direction: Axis.horizontal,
             children: <Widget>[
               Indicator(
                 color: Color(0xFF2196F3),
                 text: 'First',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
+                isSquare: false,
               ),
               Indicator(
                 color: Color(0xFFFFC300),
                 text: 'Second',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
+                isSquare: false,
               ),
               Indicator(
                 color: Color(0xFF6E1BFF),
                 text: 'Third',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
+                isSquare: false,
               ),
               Indicator(
                 color: Color(0xFF3BFF49),
                 text: 'Fourth',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 18,
-              ),
+                isSquare: false,
+              )
             ],
           ),
           const SizedBox(
             width: 28,
           ),
         ],
-      ),
-    );
+      );
+    //);
   }
 
   List<PieChartSectionData> showingSections() {
     return List.generate(4, (i) {
       final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 25.0 : 16.0;
-      final radius = isTouched ? 60.0 : 50.0;
+      final fontSize = isTouched ? 30.0 : 20.0;
+      final radius = isTouched ? 130.0 : 100.0;
       const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
       switch (i) {
         case 0:
