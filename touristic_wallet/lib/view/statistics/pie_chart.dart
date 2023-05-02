@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../provider/amounts_provider.dart';
 import '../../provider/exchange_rates_provider.dart';
-import 'indicator.dart';
+import 'label_indicator.dart';
 
 class StatisticsPieChart extends StatefulWidget {
   const StatisticsPieChart({super.key});
@@ -66,12 +66,8 @@ class StatisticsPieChartState extends State {
                   ),
                 ],
               );
-            } else {
-              return const Text(
-                'Total: Unknown123',
-                style: TextStyle(fontSize: 20),
-              );
             }
+            return const CircularProgressIndicator();
           }
         );
       }
@@ -104,10 +100,10 @@ class StatisticsPieChartState extends State {
     });
   }
 
-  List<Indicator> showingIndicators(
+  List<LabelIndicator> showingIndicators(
       AmountsProvider amountsProvider, ExchangeRatesProvider exchangeRatesProvider) {
     return List.generate(amountsProvider.amounts.length, (i) {
-      return Indicator(
+      return LabelIndicator(
         color: Color(colors[amountsProvider.amounts[i].currency]!).withAlpha(0xff),
         text: amountsProvider.amounts[i].currency,
         isSquare: false,

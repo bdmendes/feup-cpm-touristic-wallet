@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Indicator extends StatelessWidget {
-  const Indicator({
+class LabelIndicator extends StatelessWidget {
+  const LabelIndicator({
     super.key,
     required this.color,
     required this.text,

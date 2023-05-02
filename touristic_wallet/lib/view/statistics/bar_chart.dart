@@ -49,12 +49,8 @@ class _BarChart extends StatelessWidget {
                 maxY: snapshot.data!.values.reduce(max) * 1.2,
               ),
             );
-          } else {
-            return const Text(
-              'Total: Unknown123',
-              style: TextStyle(fontSize: 20),
-            );
           }
+          return const CircularProgressIndicator();
         },
       future: amountsProvider.getExchangeAmounts(exchangeRatesProvider));
   }

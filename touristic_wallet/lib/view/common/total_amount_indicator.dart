@@ -54,12 +54,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                     Text("Last update: $lastUpdate"),
                   ],
                 );
-              } else {
-                return const Text(
-                  'Total: Unknown',
-                  style: TextStyle(fontSize: 20),
-                );
               }
+                return const CircularProgressIndicator();
             },
             future: amountsProvider.getTotalAmount(exchangeRatesProvider));
       },
