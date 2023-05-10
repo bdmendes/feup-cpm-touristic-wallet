@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:touristic_wallet/provider/amounts_provider.dart';
 import 'package:touristic_wallet/provider/exchange_rates_provider.dart';
+import 'package:touristic_wallet/theme.dart';
 import 'package:touristic_wallet/view/home/amount_dialog.dart';
 import 'package:touristic_wallet/view/home/home_page.dart';
 import 'package:touristic_wallet/view/statistics/statistics_page.dart';
@@ -14,6 +16,13 @@ void main() async {
 
   final exchangeRatesProvider = ExchangeRatesProvider();
   await exchangeRatesProvider.initDatabase();
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
 
   runApp(
     MultiProvider(providers: [
@@ -30,10 +39,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Touristic Wallet',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: lightCustomTheme,
+      darkTheme: darkCustomTheme,
+      themeMode: ThemeMode.system,
       home: const MyAppPage(),
     );
   }
@@ -55,6 +63,7 @@ class MyAppPageState extends State<MyAppPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('My Touristic Wallet'),
       ),
       body: selectedPageIndex == 0 ? const HomePage() : const StatisticsPage(),
@@ -69,23 +78,25 @@ class MyAppPageState extends State<MyAppPage> {
               child: const Icon(Icons.add),
             )
           : null,
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pie_chart),
-            label: 'Statistics',
-          ),
-        ],
-        onTap: (int index) {
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
           setState(() {
             selectedPageIndex = index;
           });
         },
-        currentIndex: selectedPageIndex,
+        selectedIndex: selectedPageIndex,
+        destinations: const <NavigationDestination>[
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.leaderboard_outlined),
+            selectedIcon: Icon(Icons.leaderboard),
+            label: 'Statistics',
+          ),
+        ],
       ),
     );
   }
