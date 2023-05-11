@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 
-var lightCustomColorScheme = ColorScheme.fromSeed(
+ColorScheme lightCustomColorScheme = ColorScheme.fromSeed(
   seedColor: Colors.deepPurple,
   primary: Colors.deepPurpleAccent,
 );
 
-var lightCustomTheme = ThemeData(
+ThemeData lightCustomTheme = ThemeData(
   useMaterial3: true,
   colorScheme: lightCustomColorScheme,
   navigationBarTheme: NavigationBarThemeData(
     labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
-          (Set<MaterialState> states) {
-        if (states.contains(MaterialState.selected)) {
-          return const TextStyle(fontWeight: FontWeight.bold);
-        }
-        return const TextStyle();
+      (Set<MaterialState> states) {
+        return states.contains(MaterialState.selected) ?
+          const TextStyle(fontWeight: FontWeight.bold) : const TextStyle();
       },
     ),
   ),
@@ -25,23 +23,21 @@ var lightCustomTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
 );
 
-var darkCustomColorScheme = ColorScheme.fromSeed(
+ColorScheme darkCustomColorScheme = ColorScheme.fromSeed(
   seedColor: Colors.deepPurple,
   brightness: Brightness.dark,
   primary: Colors.deepPurpleAccent,
   surface: Colors.black,
 );
 
-var darkCustomTheme = ThemeData(
+ThemeData darkCustomTheme = ThemeData(
   useMaterial3: true,
   colorScheme: darkCustomColorScheme,
   navigationBarTheme: NavigationBarThemeData(
     labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
-          (Set<MaterialState> states) {
-        if (states.contains(MaterialState.selected)) {
-          return const TextStyle(fontWeight: FontWeight.bold);
-        }
-        return const TextStyle();
+      (Set<MaterialState> states) {
+        return states.contains(MaterialState.selected) ?
+          const TextStyle(fontWeight: FontWeight.bold) : const TextStyle();
       },
     ),
   ),
