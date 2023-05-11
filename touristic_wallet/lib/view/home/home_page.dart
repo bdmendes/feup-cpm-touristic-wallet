@@ -11,7 +11,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 20,),
         const TotalAmountIndicator(),
         Expanded(child: Consumer<AmountsProvider>(
           builder: (context, amountsProvider, child) {

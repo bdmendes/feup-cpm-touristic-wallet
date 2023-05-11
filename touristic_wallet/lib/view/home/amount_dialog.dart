@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 import '../../model/amount.dart';
 import '../../provider/amounts_provider.dart';
@@ -19,6 +20,13 @@ class AmountDialogState extends State<AmountDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _valueController = TextEditingController();
   String? _currency;
+  final TextEditingController _textEditingController = TextEditingController();
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +55,7 @@ class AmountDialogState extends State<AmountDialog> {
                       style: const TextStyle(fontSize: 20)),
                   const SizedBox(height: 20),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       SizedBox(
                         width: 120,
@@ -71,7 +80,11 @@ class AmountDialogState extends State<AmountDialog> {
                       const SizedBox(width: 20),
                       SizedBox(
                           width: 100,
-                          child: DropdownButtonFormField(
+                          child: DropdownButtonFormField2<String>(
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            isExpanded: true,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Invalid currency';
@@ -81,12 +94,48 @@ class AmountDialogState extends State<AmountDialog> {
                             value: _currency,
                             items: currencies
                                 .map((e) =>
-                                    DropdownMenuItem(value: e, child: Text(e)))
+                                DropdownMenuItem(value: e, child: Text(e)))
                                 .toList(),
                             onChanged: (String? value) {
                               setState(() {
                                 _currency = value;
                               });
+                            },
+                            dropdownStyleData: const DropdownStyleData(
+                              maxHeight: 250,
+                            ),
+                            buttonStyleData: const ButtonStyleData(
+                              height: 45,
+                            ),
+                            dropdownSearchData: DropdownSearchData(
+                              searchController: _textEditingController,
+                              searchInnerWidgetHeight: 50,
+                              searchInnerWidget: Container(
+                                height: 50,
+                                padding: const EdgeInsets.all(4),
+                                child: TextFormField(
+                                  expands: true,
+                                  maxLines: null,
+                                  controller: _textEditingController,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.all(8),
+                                    hintText: 'Search',
+                                    hintStyle: const TextStyle(fontSize: 16),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              searchMatchFn: (item, searchValue) {
+                                return item.value.toString().contains(searchValue.toUpperCase());
+                              },
+                            ),
+                            onMenuStateChange: (isOpen) {
+                              if (!isOpen) {
+                                _textEditingController.clear();
+                              }
                             },
                           )),
                     ],
