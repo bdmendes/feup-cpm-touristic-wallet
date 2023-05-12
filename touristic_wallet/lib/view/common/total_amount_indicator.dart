@@ -19,7 +19,6 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
   Widget build(BuildContext context) {
     return Consumer2<AmountsProvider, ExchangeRatesProvider>(
       builder: (context, amountsProvider, exchangeRatesProvider, child) {
-        final lastUpdate = exchangeRatesProvider.getLastUpdateTime();
         if (amountsProvider.amounts.isEmpty) {
           return const Text(
             'Total: 0',
@@ -29,6 +28,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
 
         return FutureBuilder(
             builder: (context, snapshot) {
+              final lastUpdate = exchangeRatesProvider.getLastUpdateTime();
               if (snapshot.hasData) {
                 return Column(
                   children: [

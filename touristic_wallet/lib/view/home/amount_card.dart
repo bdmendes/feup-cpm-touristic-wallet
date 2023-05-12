@@ -24,7 +24,7 @@ class AmountCardState extends State<AmountCard> {
     return Card(
         margin: const EdgeInsets.all(10),
         child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
             child: Row(
               children: [
                 Text('${widget.amount.value} ${widget.amount.currency}'),
