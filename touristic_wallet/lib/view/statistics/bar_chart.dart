@@ -44,7 +44,7 @@ class _BarChart extends StatelessWidget {
                 titlesData: titlesData,
                 borderData: borderData,
                 barGroups: getBarGroups(snapshot.data!),
-                gridData: FlGridData(show: false),
+                gridData: FlGridData( show: false),
                 alignment: BarChartAlignment.spaceAround,
                 maxY: snapshot.data!.values.reduce(max) * 1.2,
               ),
@@ -87,7 +87,11 @@ class _BarChart extends StatelessWidget {
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 4,
-      child: Text(amountsProvider.amounts[value.toInt()].currency, style: style),
+      child: Text(
+        '${amountsProvider.amounts[value.toInt()].value}\n${amountsProvider.amounts[value.toInt()].currency}',
+        style: style,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -96,12 +100,20 @@ class _BarChart extends StatelessWidget {
     bottomTitles: AxisTitles(
       sideTitles: SideTitles(
         showTitles: true,
-        reservedSize: 30,
+        reservedSize: 60,
         getTitlesWidget: getTitles,
       ),
     ),
     leftTitles: AxisTitles(
-      sideTitles: SideTitles(showTitles: false),
+      axisNameSize: 30,
+      axisNameWidget: Text(
+        amountsProvider.currency,
+        style: const TextStyle(
+          color: Color(0xFF2196F3),
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      )
     ),
     topTitles: AxisTitles(
       sideTitles: SideTitles(showTitles: false),
