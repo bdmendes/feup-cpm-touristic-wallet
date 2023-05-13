@@ -14,14 +14,16 @@ class StatisticsPage extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          bottom: TabBar(
+          toolbarHeight: 120,
+          flexibleSpace: const TotalAmountIndicator(),
+          bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.bar_chart)),
               Tab(icon: Icon(Icons.pie_chart)),
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
             StatisticsBarChart(),
             StatisticsPieChart()
