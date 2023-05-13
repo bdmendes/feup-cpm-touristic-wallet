@@ -51,7 +51,7 @@ class StatisticsPieChartState extends State {
                         ),
                         sectionsSpace: 0,
                         centerSpaceRadius: 50,
-                        sections: showingSections(snapshot.data!),
+                        sections: showingSections(amountsProvider, snapshot.data!),
                       ),
                     ),
                   ),
@@ -74,11 +74,12 @@ class StatisticsPieChartState extends State {
     );
   }
 
-  List<PieChartSectionData> showingSections(Map<String, double> exchangeAmounts) {
+  List<PieChartSectionData> showingSections(AmountsProvider amountsProvider, Map<String, double> exchangeAmounts) {
     return List.generate(exchangeAmounts.length, (i) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 30.0 : 20.0;
       final radius = isTouched ? 130.0 : 100.0;
+      final widgetSize = isTouched ? 110.0 : 110.0;
       const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
       var key = exchangeAmounts.keys.toList()[i];
       var total = exchangeAmounts.values.reduce((a, b) => a + b);
@@ -87,8 +88,8 @@ class StatisticsPieChartState extends State {
       }
       return PieChartSectionData(
         color: Color(colors[key]!).withAlpha(0xff),
-        value: exchangeAmounts[key],
-        title: exchangeAmounts[key]! / total < 0.03 ? "" : exchangeAmounts[key]!.toStringAsFixed(2),
+        value: exchangeAmounts[key]!,
+        title: exchangeAmounts[key]! / total < 0.03 ? "" : '${amountsProvider.amounts[i].value}',
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
@@ -96,6 +97,13 @@ class StatisticsPieChartState extends State {
           color: Colors.white,
           shadows: shadows,
         ),
+        badgeWidget: exchangeAmounts[key]! / total < 0.03 ? null :
+        _Badge(
+          '${exchangeAmounts[key]!.toStringAsFixed(2)} ${amountsProvider.currency}',
+          size: widgetSize,
+          borderColor: const Color(0xff000000),
+        ),
+        badgePositionPercentageOffset: 1.2,
       );
     });
   }
@@ -109,5 +117,47 @@ class StatisticsPieChartState extends State {
         isSquare: false,
       );
     });
+  }
+}
+
+class _Badge extends StatelessWidget {
+  const _Badge(
+      this.text, {
+        required this.size,
+        required this.borderColor,
+      });
+  final String text;
+  final double size;
+  final Color borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: PieChart.defaultDuration,
+      width: size,
+      height: size/2,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: borderColor,
+          width: 2,
+        ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(.5),
+            offset: const Offset(3, 3),
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(size * .05),
+      child: Center(
+          child: Text(text,
+          overflow: TextOverflow.fade,
+        ),
+      ),
+    );
   }
 }
