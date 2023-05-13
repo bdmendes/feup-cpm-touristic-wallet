@@ -69,8 +69,8 @@ class _BarChart extends StatelessWidget {
           ) {
         return BarTooltipItem(
           rod.toY.round().toString(),
-          const TextStyle(
-            color: Color(0xFF50E4FF),
+          TextStyle(
+            color: amountsProvider.amounts[groupIndex].color,
             fontWeight: FontWeight.bold,
           ),
         );
@@ -79,8 +79,8 @@ class _BarChart extends StatelessWidget {
   );
 
   Widget getTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color(0xFF2196F3),
+    var style = TextStyle(
+      color: amountsProvider.amounts[value.toInt()].color,
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
@@ -109,7 +109,7 @@ class _BarChart extends StatelessWidget {
       axisNameWidget: Text(
         amountsProvider.currency,
         style: const TextStyle(
-          color: Color(0xFF2196F3),
+          color: Color(0xFF555555),
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),
@@ -127,14 +127,16 @@ class _BarChart extends StatelessWidget {
     show: false,
   );
 
-  LinearGradient get _barsGradient => const LinearGradient(
-    colors: [
-      Color(0xFF2196F3),
-      Color(0xFF50E4FF),
-    ],
-    begin: Alignment.bottomCenter,
-    end: Alignment.topCenter,
-  );
+  LinearGradient getBarsGradient(index) {
+    return LinearGradient(
+      colors: [
+        amountsProvider.amounts[index].color,
+        amountsProvider.amounts[index].color.withAlpha(0x55),
+      ],
+      begin: Alignment.bottomCenter,
+      end: Alignment.topCenter,
+    );
+  }
 
   List<BarChartGroupData> getBarGroups(Map<String, double> exchangeAmounts) {
     return List<BarChartGroupData>.generate(
@@ -144,7 +146,7 @@ class _BarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
               toY: exchangeAmounts[amountsProvider.amounts[index].currency]!,
-              gradient: _barsGradient,
+              gradient: getBarsGradient(index),
             )
           ],
           showingTooltipIndicators: [0],

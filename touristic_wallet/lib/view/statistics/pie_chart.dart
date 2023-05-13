@@ -17,7 +17,6 @@ class StatisticsPieChart extends StatefulWidget {
 
 class StatisticsPieChartState extends State {
   int touchedIndex = -1;
-  var colors = <String, int>{};
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +82,8 @@ class StatisticsPieChartState extends State {
       const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
       var key = exchangeAmounts.keys.toList()[i];
       var total = exchangeAmounts.values.reduce((a, b) => a + b);
-      if (!colors.containsKey(key)) {
-        colors[key] = Random().nextInt(0xffffffff);
-      }
       return PieChartSectionData(
-        color: Color(colors[key]!).withAlpha(0xff),
+        color: amountsProvider.amounts[i].color,
         value: exchangeAmounts[key]!,
         title: exchangeAmounts[key]! / total < 0.03 ? "" : '${amountsProvider.amounts[i].value}',
         radius: radius,
@@ -112,7 +108,7 @@ class StatisticsPieChartState extends State {
       AmountsProvider amountsProvider, ExchangeRatesProvider exchangeRatesProvider) {
     return List.generate(amountsProvider.amounts.length, (i) {
       return LabelIndicator(
-        color: Color(colors[amountsProvider.amounts[i].currency]!).withAlpha(0xff),
+        color: amountsProvider.amounts[i].color,
         text: amountsProvider.amounts[i].currency,
         isSquare: false,
       );
