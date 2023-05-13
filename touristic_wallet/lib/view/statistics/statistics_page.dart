@@ -10,19 +10,24 @@ class StatisticsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PageController controller = PageController();
-    return Column(
-      children: [
-        const TotalAmountIndicator(),
-        Expanded(child: PageView(
-              controller: controller,
-              children: const <Widget>[
-                StatisticsBarChart(),
-                StatisticsPieChart()
-              ],
-            )
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.bar_chart)),
+              Tab(icon: Icon(Icons.pie_chart)),
+            ],
+          ),
         ),
-      ],
+        body: TabBarView(
+          children: [
+            StatisticsBarChart(),
+            StatisticsPieChart()
+          ],
+        ),
+      ),
     );
   }
 }
