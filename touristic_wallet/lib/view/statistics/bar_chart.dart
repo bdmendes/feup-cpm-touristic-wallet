@@ -38,6 +38,9 @@ class _BarChart extends StatelessWidget {
     return FutureBuilder(
         builder:  (context, snapshot) {
           if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
+              return const Center();
+            }
             return BarChart(
               BarChartData(
                 barTouchData: barTouchData,
