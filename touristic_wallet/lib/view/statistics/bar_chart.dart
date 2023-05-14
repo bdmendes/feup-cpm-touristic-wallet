@@ -38,13 +38,16 @@ class _BarChart extends StatelessWidget {
     return FutureBuilder(
         builder:  (context, snapshot) {
           if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
+              return const Center();
+            }
             return BarChart(
               BarChartData(
                 barTouchData: barTouchData,
                 titlesData: titlesData,
                 borderData: borderData,
                 barGroups: getBarGroups(snapshot.data!),
-                gridData: FlGridData(show: false),
+                gridData: FlGridData( show: false),
                 alignment: BarChartAlignment.spaceAround,
                 maxY: snapshot.data!.values.reduce(max) * 1.2,
               ),
@@ -69,8 +72,8 @@ class _BarChart extends StatelessWidget {
           ) {
         return BarTooltipItem(
           rod.toY.round().toString(),
-          const TextStyle(
-            color: Color(0xFF50E4FF),
+          TextStyle(
+            color: amountsProvider.amounts[groupIndex].color,
             fontWeight: FontWeight.bold,
           ),
         );
@@ -79,15 +82,19 @@ class _BarChart extends StatelessWidget {
   );
 
   Widget getTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color(0xFF2196F3),
+    var style = TextStyle(
+      color: amountsProvider.amounts[value.toInt()].color,
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 4,
-      child: Text(amountsProvider.amounts[value.toInt()].currency, style: style),
+      child: Text(
+        '${amountsProvider.amounts[value.toInt()].value}\n${amountsProvider.amounts[value.toInt()].currency}',
+        style: style,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -96,12 +103,20 @@ class _BarChart extends StatelessWidget {
     bottomTitles: AxisTitles(
       sideTitles: SideTitles(
         showTitles: true,
-        reservedSize: 30,
+        reservedSize: 60,
         getTitlesWidget: getTitles,
       ),
     ),
     leftTitles: AxisTitles(
-      sideTitles: SideTitles(showTitles: false),
+      axisNameSize: 30,
+      axisNameWidget: Text(
+        amountsProvider.currency,
+        style: const TextStyle(
+          color: Color(0xFF555555),
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      )
     ),
     topTitles: AxisTitles(
       sideTitles: SideTitles(showTitles: false),
@@ -115,14 +130,16 @@ class _BarChart extends StatelessWidget {
     show: false,
   );
 
-  LinearGradient get _barsGradient => const LinearGradient(
-    colors: [
-      Color(0xFF2196F3),
-      Color(0xFF50E4FF),
-    ],
-    begin: Alignment.bottomCenter,
-    end: Alignment.topCenter,
-  );
+  LinearGradient getBarsGradient(index) {
+    return LinearGradient(
+      colors: [
+        amountsProvider.amounts[index].color,
+        amountsProvider.amounts[index].color.withAlpha(0x55),
+      ],
+      begin: Alignment.bottomCenter,
+      end: Alignment.topCenter,
+    );
+  }
 
   List<BarChartGroupData> getBarGroups(Map<String, double> exchangeAmounts) {
     return List<BarChartGroupData>.generate(
@@ -132,7 +149,7 @@ class _BarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
               toY: exchangeAmounts[amountsProvider.amounts[index].currency]!,
-              gradient: _barsGradient,
+              gradient: getBarsGradient(index),
             )
           ],
           showingTooltipIndicators: [0],

@@ -42,7 +42,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AmountsProvider, ExchangeRatesProvider>(
+    final indicator = Consumer2<AmountsProvider, ExchangeRatesProvider>(
       builder: (context, amountsProvider, exchangeRatesProvider, child) {
         if (amountsProvider.amounts.isEmpty) {
           return const Column(
@@ -58,7 +58,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
 
         return FutureBuilder(
             builder: (context, snapshot) {
-              final lastUpdate = exchangeRatesProvider.getLastUpdateTime();
+              final lastUpdate = exchangeRatesProvider.getLastUpdateTime() ?? "Never";
               if (snapshot.hasData) {
                 return Column(
                   children: [
@@ -141,6 +141,12 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             },
             future: amountsProvider.getTotalAmount(exchangeRatesProvider));
       },
+    );
+    return SizedBox(
+      height: 130,
+      child: Center(
+        child: indicator,
+      ),
     );
   }
 }

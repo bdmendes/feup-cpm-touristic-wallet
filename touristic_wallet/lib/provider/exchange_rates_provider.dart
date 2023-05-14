@@ -27,7 +27,7 @@ class ExchangeRatesProvider extends DatabaseProvider {
       String fromCurrency, String toCurrency) async {
     if (fromCurrency == toCurrency) {
       return ExchangeRate(
-          fromCurrency, toCurrency, 1, DateTime.now().toIso8601String());
+          fromCurrency, toCurrency, 1, DateTime.now().toString());
     }
 
     final cachedExchangeRate = _cachedExchangeRates.firstWhere(
@@ -35,7 +35,7 @@ class ExchangeRatesProvider extends DatabaseProvider {
             element.fromCurrency == fromCurrency &&
             element.toCurrency == toCurrency,
         orElse: () => ExchangeRate(
-            fromCurrency, toCurrency, 0, DateTime.now().toIso8601String()));
+            fromCurrency, toCurrency, 0, DateTime.now().toString()));
     if (cachedExchangeRate.rate != 0) {
       return cachedExchangeRate;
     }
@@ -98,6 +98,7 @@ class ExchangeRatesProvider extends DatabaseProvider {
     if (_cachedExchangeRates.isEmpty) {
       return null;
     }
-    return _cachedExchangeRates[0].date;
+    final dateComponents = _cachedExchangeRates[0].date.split(" ");
+    return dateComponents.sublist(0, dateComponents.length - 2).join(" ");
   }
 }
