@@ -39,6 +39,18 @@ class AmountsProvider extends DatabaseProvider {
   }
 
   Future<void> addAmount(Amount amount) async {
+    for (final oldAmount in _amounts) {
+      if (oldAmount.currency == amount.currency) {
+        final newAmount = Amount(
+          oldAmount.value + amount.value,
+          oldAmount.currency,
+          id: oldAmount.id,
+        );
+        await replaceAmount(oldAmount, newAmount);
+        return;
+      }
+    }
+
     final id = await database.insert(
       'amounts',
       amount.toMap(),
