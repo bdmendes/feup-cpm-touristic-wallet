@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
-ColorScheme lightCustomColorScheme = ColorScheme.fromSeed(
-  seedColor: Colors.deepPurple,
-  primary: Colors.deepPurpleAccent,
-);
-
 ThemeData lightCustomTheme = ThemeData(
   useMaterial3: true,
-  colorScheme: lightCustomColorScheme,
+  colorScheme: ColorScheme.fromSeed(
+    brightness: Brightness.light,
+    seedColor: Colors.deepPurple,
+    primary: Colors.deepPurpleAccent,
+  ),
   navigationBarTheme: NavigationBarThemeData(
     labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
       (Set<MaterialState> states) {
@@ -16,23 +15,15 @@ ThemeData lightCustomTheme = ThemeData(
       },
     ),
   ),
-  appBarTheme: const AppBarTheme(
-    color: Colors.white,
-  ),
-  canvasColor: Colors.white,
-  scaffoldBackgroundColor: Colors.white,
-);
-
-ColorScheme darkCustomColorScheme = ColorScheme.fromSeed(
-  seedColor: Colors.deepPurple,
-  brightness: Brightness.dark,
-  primary: Colors.deepPurpleAccent,
-  surface: Colors.black,
 );
 
 ThemeData darkCustomTheme = ThemeData(
   useMaterial3: true,
-  colorScheme: darkCustomColorScheme,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.deepPurple,
+    brightness: Brightness.dark,
+    primary: Colors.deepPurpleAccent,
+  ),
   navigationBarTheme: NavigationBarThemeData(
     labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
       (Set<MaterialState> states) {
@@ -41,9 +32,4 @@ ThemeData darkCustomTheme = ThemeData(
       },
     ),
   ),
-  appBarTheme: const AppBarTheme(
-    color: Colors.black,
-  ),
-  canvasColor: Colors.black,
-  scaffoldBackgroundColor: Colors.black,
 );
