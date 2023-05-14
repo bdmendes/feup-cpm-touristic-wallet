@@ -98,6 +98,7 @@ class ExchangeRatesProvider extends DatabaseProvider {
     if (_cachedExchangeRates.isEmpty) {
       return null;
     }
-    return _cachedExchangeRates[0].date;
+    final dateComponents = _cachedExchangeRates[0].date.split(" ");
+    return dateComponents.sublist(0, dateComponents.length - 2).join(" ");
   }
 }
