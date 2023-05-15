@@ -45,24 +45,43 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
     final indicator = Consumer2<AmountsProvider, ExchangeRatesProvider>(
       builder: (context, amountsProvider, exchangeRatesProvider, child) {
         if (amountsProvider.amounts.isEmpty) {
-          return const Column(
-            children: [
-              SizedBox(height: 30,),
-              Text(
-                'No money yet. Add some!',
-                style: TextStyle(fontSize: 25),
-              ),
-            ]
-          );
+          return const Column(children: [
+            SizedBox(
+              height: 30,
+            ),
+            Text(
+              'No money yet. Add some!',
+              style: TextStyle(fontSize: 25),
+            ),
+          ]);
         }
 
         return FutureBuilder(
             builder: (context, snapshot) {
-              final lastUpdate = exchangeRatesProvider.getLastUpdateTime() ?? "Never";
+              final lastUpdate =
+                  exchangeRatesProvider.getLastUpdateTime() ?? "Never";
               if (snapshot.hasData) {
+                if (snapshot.data! < 0) {
+                  return const Column(
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text('Exchange rates not available',
+                      style: TextStyle(fontSize: 18)),
+                      Text(
+                        'Connect to the internet or remove newly added currencies',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 13,),
+                      ),
+                    ],
+                  );
+                }
                 return Column(
                   children: [
-                    const SizedBox(height: 20,),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -83,7 +102,10 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                              child: Text(value,
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
                             );
                           }).toList(),
                           value: amountsProvider.currency,
@@ -93,7 +115,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                             });
                           },
                           buttonStyleData: const ButtonStyleData(
-                            overlayColor: MaterialStatePropertyAll(Colors.transparent),
+                            overlayColor:
+                                MaterialStatePropertyAll(Colors.transparent),
                           ),
                           dropdownStyleData: const DropdownStyleData(
                             maxHeight: 400,
@@ -122,7 +145,9 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                               ),
                             ),
                             searchMatchFn: (item, searchValue) {
-                              return item.value.toString().contains(searchValue.toUpperCase());
+                              return item.value
+                                  .toString()
+                                  .contains(searchValue.toUpperCase());
                             },
                           ),
                           onMenuStateChange: (isOpen) {
@@ -137,7 +162,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                   ],
                 );
               }
-                return const CircularProgressIndicator();
+              return const CircularProgressIndicator();
             },
             future: amountsProvider.getTotalAmount(exchangeRatesProvider));
       },

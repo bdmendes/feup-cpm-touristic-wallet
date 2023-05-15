@@ -78,7 +78,7 @@ class MyAppPageState extends State<MyAppPage> {
           ? FloatingActionButton(
               onPressed: () {
                 showDialog(
-                    barrierDismissible: true,
+                    barrierDismissible: false,
                     context: context,
                     builder: (context) => const AmountDialog());
               },

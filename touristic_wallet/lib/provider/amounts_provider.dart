@@ -100,6 +100,8 @@ class AmountsProvider extends DatabaseProvider {
           amount.currency, _currency);
       if (exchangeRate != null) {
         totalAmount += amount.value * exchangeRate.rate;
+      } else {
+        return -1;
       }
     }
 
