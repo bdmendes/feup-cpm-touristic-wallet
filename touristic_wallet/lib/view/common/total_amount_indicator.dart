@@ -92,16 +92,20 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        GestureDetector(
+                        const SizedBox(width: 10),
+                        Flexible(child:GestureDetector(
                           onTap: () {
                             openDropdown();
                           },
                           child: Text(
                             snapshot.data![0].toStringAsFixed(2),
-                            style: const TextStyle(fontSize: 45),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            style: const TextStyle(fontSize: 40),
                           ),
-                        ),
-                        const SizedBox(width: 5),
+                        )),
+                        const SizedBox(width: 10),
                         DropdownButton2<String>(
                           key: _dropdownButtonKey,
                           alignment: Alignment.centerRight,
@@ -164,6 +168,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                             }
                           },
                         ),
+                        const SizedBox(width: 10),
                       ],
                     ),
                     Text("Last update: $lastUpdate"),
@@ -185,11 +190,11 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             shrinkWrap: true,
             children: [
               SizedBox(
-                height: 130,
+                height: 120,
                 child: Center(
                   child: indicator,
                 ),
-              )
+              ),
             ]),
         onRefresh: () async {
           Provider.of<AmountsProvider>(context, listen: false).getTotalAmount(

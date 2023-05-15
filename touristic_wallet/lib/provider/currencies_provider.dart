@@ -11,13 +11,13 @@ import 'package:http/http.dart' as http;
 class CurrenciesProvider extends DatabaseProvider {
   CurrenciesProvider()
       : super(
-      'currencies.db',
-      '''CREATE TABLE currencies '''
-          '''(id INTEGER PRIMARY KEY, '''
-          '''code TEXT, '''
-          '''name TEXT, '''
-          '''type TEXT, '''
-          '''icon TEXT)''');
+            'currencies.db',
+            '''CREATE TABLE currencies '''
+                '''(id INTEGER PRIMARY KEY, '''
+                '''code TEXT, '''
+                '''name TEXT, '''
+                '''type TEXT, '''
+                '''icon TEXT)''');
 
   final List<Currency> _cachedCurrencies = [];
 
@@ -26,12 +26,12 @@ class CurrenciesProvider extends DatabaseProvider {
       return _cachedCurrencies;
     }
 
-    return await getCurrenciesFromAPI();
+    return getCurrenciesFromAPI();
   }
 
   Future<List<Currency>?> getCurrenciesFromAPI() async {
-    final url = Uri.parse(
-        "https://api.currencyfreaks.com/v2.0/supported-currencies");
+    final url =
+        Uri.parse("https://api.currencyfreaks.com/v2.0/supported-currencies");
     return http.get(url).then((response) {
       if (response.statusCode != 200) {
         throw Exception('Failed to load currencies');
@@ -42,10 +42,10 @@ class CurrenciesProvider extends DatabaseProvider {
         return null;
       }
       final currencies = currenciesMap.entries
-          .where((c) => c.value['countryCode'] != 'Crypto')   // filter cryptocurrencies
-          .map((c) =>
-          Currency(c.key, c.value['currencyName'], c.value['countryCode'],
-              c.value['icon']))
+          .where((c) =>
+              c.value['countryCode'] != 'Crypto') // filter cryptocurrencies
+          .map((c) => Currency(c.key, c.value['currencyName'],
+              c.value['countryCode'], c.value['icon']))
           .toList();
       currencies.sort((a, b) => a.code.compareTo(b.code));
       _cachedCurrencies.clear();
@@ -63,9 +63,10 @@ class CurrenciesProvider extends DatabaseProvider {
       if (value.isEmpty) {
         return null;
       }
-      final currencies = List.generate(value.length, (index) =>
-        Currency(value[index]['code'], value[index]['name'], value[index]['type'], value[index]['icon'])
-      );
+      final currencies = List.generate(
+          value.length,
+          (index) => Currency(value[index]['code'], value[index]['name'],
+              value[index]['type'], value[index]['icon']));
       _cachedCurrencies.clear();
       _cachedCurrencies.addAll(currencies);
       return currencies;
@@ -74,6 +75,11 @@ class CurrenciesProvider extends DatabaseProvider {
 
   Future<void> _saveToDatabase(List<Currency> currencies) async {
     await database.delete('currencies');
+
+    currencies = currencies
+        .where((element) =>
+            currencies.where((e) => e.code == element.code).length == 1)
+        .toList();
 
     for (final currency in currencies) {
       await database.insert(
@@ -89,9 +95,11 @@ class CurrenciesProvider extends DatabaseProvider {
       return _cachedCurrencies.firstWhere((element) => element.code == code);
     }
 
-    final currency = await database.query('currencies', where: 'code = ?', whereArgs: [code]);
+    final currency = await database
+        .query('currencies', where: 'code = ?', whereArgs: [code]);
     if (currency.isNotEmpty) {
-      return Currency(currency[0]['code'], currency[0]['name'], currency[0]['type'], currency[0]['icon']);
+      return Currency(currency[0]['code'], currency[0]['name'],
+          currency[0]['type'], currency[0]['icon']);
     }
 
     return null;
