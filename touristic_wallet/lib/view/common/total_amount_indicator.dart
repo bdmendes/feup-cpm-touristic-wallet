@@ -67,12 +67,14 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                       SizedBox(
                         height: 30,
                       ),
-                      Text('Exchange rates not available',
-                      style: TextStyle(fontSize: 18)),
+                      Text('Total amount not available',
+                          style: TextStyle(fontSize: 18)),
                       Text(
                         'Connect to the internet or remove newly added currencies',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13,),
+                        style: TextStyle(
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   );
@@ -167,6 +169,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             future: amountsProvider.getTotalAmount(exchangeRatesProvider));
       },
     );
+
     return SizedBox(
       height: 130,
       child: Center(

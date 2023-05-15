@@ -139,14 +139,16 @@ class _BarChart extends StatelessWidget {
   }
 
   List<BarChartGroupData> getBarGroups(Map<String, double> exchangeAmounts) {
+    final amounts = amountsProvider.amounts
+        .where((element) => exchangeAmounts.containsKey(element.currency))
+        .toList();
     return List<BarChartGroupData>.generate(
-        amountsProvider.amounts.length,
+        amounts.length,
         (index) => BarChartGroupData(
               x: index,
               barRods: [
                 BarChartRodData(
-                  toY:
-                      exchangeAmounts[amountsProvider.amounts[index].currency]!,
+                  toY: exchangeAmounts[amounts[index].currency]!,
                   gradient: getBarsGradient(index),
                 )
               ],
