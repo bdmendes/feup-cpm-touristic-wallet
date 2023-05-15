@@ -19,7 +19,7 @@ class ExchangeRatesProvider extends DatabaseProvider {
                 '''date TEXT, '''
                 '''rate REAL)''');
 
-  static const _apiKey = '2fdb9618804b6ba2dd3e5b62';
+  static const _apiKey = 'b25dbffc483049968343b355165be250';
 
   final List<ExchangeRate> _cachedExchangeRates = [];
 
@@ -41,18 +41,19 @@ class ExchangeRatesProvider extends DatabaseProvider {
     }
 
     final url = Uri.parse(
-        "https://v6.exchangerate-api.com/v6/$_apiKey/latest/$fromCurrency");
+        "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=$_apiKey");
     return http.get(url).then((response) {
       if (response.statusCode != 200) {
         throw Exception('Failed to load exchange rate');
       }
       final data = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
-      final rate = data['conversion_rates']?[toCurrency];
-      final date = data['time_last_update_utc'];
-      if (rate == null || date == null) {
+      final fromCurrencyRate = double.tryParse(data['rates']?[fromCurrency]);
+      final toCurrencyRate = double.tryParse(data['rates']?[toCurrency]);
+      final date = data['date'];
+      if (fromCurrencyRate == null || toCurrencyRate == null || date == null) {
         return null;
       }
-      final exchangeRate = ExchangeRate(fromCurrency, toCurrency, rate, date);
+      final exchangeRate = ExchangeRate(fromCurrency, toCurrency, toCurrencyRate / fromCurrencyRate, date);
       _cachedExchangeRates.remove(cachedExchangeRate);
       _cachedExchangeRates.add(exchangeRate);
       _saveToDatabase(exchangeRate);

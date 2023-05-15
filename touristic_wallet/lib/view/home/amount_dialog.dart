@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/amount.dart';
+import '../../model/currency.dart';
 import '../../provider/amounts_provider.dart';
+import '../../provider/currencies_provider.dart';
 
 class AmountDialog extends StatefulWidget {
   const AmountDialog({super.key, this.savedAmount});
@@ -30,6 +32,8 @@ class AmountDialogState extends State<AmountDialog> {
     }
     final amountsProvider =
         Provider.of<AmountsProvider>(context, listen: false);
+    final currenciesProvider =
+        Provider.of<CurrenciesProvider>(context, listen: false);
     return Dialog(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -71,23 +75,37 @@ class AmountDialogState extends State<AmountDialog> {
                       const SizedBox(width: 20),
                       SizedBox(
                           width: 100,
-                          child: DropdownButtonFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Invalid currency';
-                              }
-                              return null;
-                            },
-                            value: _currency,
-                            items: currencies
-                                .map((e) =>
-                                    DropdownMenuItem(value: e, child: Text(e)))
-                                .toList(),
-                            onChanged: (String? value) {
-                              setState(() {
-                                _currency = value;
-                              });
-                            },
+                          child: FutureBuilder(
+                              future: currenciesProvider.getCurrencies(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                  return DropdownButtonFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Invalid currency';
+                                      }
+                                      return null;
+                                    },
+                                    value: _currency,
+                                    items: snapshot.data!
+                                        .map<DropdownMenuItem<String>>((Currency currency) {
+                                      return DropdownMenuItem<String>(
+                                        value: currency.code,
+                                        child: Text(currency.code),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _currency = value;
+                                      });
+                                    },
+                                  );
+                                }
+                                return const SizedBox(
+                                    width: 100,
+                                    child: Center(
+                                        child: CircularProgressIndicator())
+                                );}
                           )),
                     ],
                   ),

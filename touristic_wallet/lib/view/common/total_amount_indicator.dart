@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:touristic_wallet/model/amount.dart';
+import 'package:touristic_wallet/provider/currencies_provider.dart';
 import 'package:touristic_wallet/provider/exchange_rates_provider.dart';
 
+import '../../model/currency.dart';
 import '../../provider/amounts_provider.dart';
 
 class TotalAmountIndicator extends StatefulWidget {
@@ -17,8 +18,8 @@ class TotalAmountIndicator extends StatefulWidget {
 class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AmountsProvider, ExchangeRatesProvider>(
-      builder: (context, amountsProvider, exchangeRatesProvider, child) {
+    return Consumer3<AmountsProvider, ExchangeRatesProvider, CurrenciesProvider>(
+      builder: (context, amountsProvider, exchangeRatesProvider, currenciesProvider, child) {
         final lastUpdate = exchangeRatesProvider.getLastUpdateTime();
         if (amountsProvider.amounts.isEmpty) {
           return const Text(
@@ -28,7 +29,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
         }
 
         return FutureBuilder(
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               if (snapshot.hasData) {
                 return Column(
                   children: [
@@ -39,16 +40,15 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                           amountsProvider.currency = newValue!;
                         });
                       },
-                      items: currencies
-                          .map<DropdownMenuItem<String>>((String value) {
+                      items: snapshot.data?[1]!.map<DropdownMenuItem<String>>((Currency currency) {
                         return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value, style: const TextStyle(fontSize: 20)),
+                          value: currency.code,
+                          child: Text(currency.code, style: const TextStyle(fontSize: 20)),
                         );
                       }).toList(),
                     ),
                     Text(
-                      'Total: ${snapshot.data} ${amountsProvider.currency}',
+                      'Total: ${snapshot.data?[0]} ${amountsProvider.currency}',
                       style: const TextStyle(fontSize: 20),
                     ),
                     Text("Last update: $lastUpdate"),
@@ -57,7 +57,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
               }
                 return const CircularProgressIndicator();
             },
-            future: amountsProvider.getTotalAmount(exchangeRatesProvider));
+            future: Future.wait([amountsProvider.getTotalAmount(exchangeRatesProvider), currenciesProvider.getCurrencies()]));
       },
     );
   }
