@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:touristic_wallet/provider/amounts_provider.dart';
 import 'package:touristic_wallet/provider/exchange_rates_provider.dart';
 import 'package:touristic_wallet/theme.dart';
+import 'package:touristic_wallet/view/common/total_amount_indicator.dart';
 import 'package:touristic_wallet/view/home/amount_dialog.dart';
 import 'package:touristic_wallet/view/home/home_page.dart';
 import 'package:touristic_wallet/view/statistics/statistics_page.dart';
@@ -66,7 +67,13 @@ class MyAppPageState extends State<MyAppPage> {
         centerTitle: true,
         title: const Text('My Touristic Wallet'),
       ),
-      body: selectedPageIndex == 0 ? const HomePage() : const StatisticsPage(),
+      body: Column(children: [
+        const TotalAmountIndicator(),
+        Expanded(
+            child: selectedPageIndex == 0
+                ? const HomePage()
+                : const StatisticsPage())
+      ]),
       floatingActionButton: selectedPageIndex == 0
           ? FloatingActionButton(
               onPressed: () {
