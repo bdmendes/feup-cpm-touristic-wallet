@@ -15,6 +15,9 @@ ThemeData lightCustomTheme = ThemeData(
       },
     ),
   ),
+  appBarTheme: const AppBarTheme(
+    scrolledUnderElevation: 0,
+  ),
 );
 
 ThemeData darkCustomTheme = ThemeData(
@@ -31,5 +34,8 @@ ThemeData darkCustomTheme = ThemeData(
           const TextStyle(fontWeight: FontWeight.bold) : const TextStyle();
       },
     ),
+  ),
+  appBarTheme: const AppBarTheme(
+    scrolledUnderElevation: 0,
   ),
 );
