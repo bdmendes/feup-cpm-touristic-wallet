@@ -92,7 +92,7 @@ class AmountsProvider extends DatabaseProvider {
     }
   }
 
-  Future<double> getTotalAmount(ExchangeRatesProvider exchangeRatesProvider) async {
+  Future<double> getTotalAmount(ExchangeRatesProvider exchangeRatesProvider, {bool notify = false}) async {
     var totalAmount = 0.0;
 
     for (final amount in _amounts) {
@@ -105,7 +105,10 @@ class AmountsProvider extends DatabaseProvider {
       }
     }
 
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
+
     return totalAmount;
   }
 

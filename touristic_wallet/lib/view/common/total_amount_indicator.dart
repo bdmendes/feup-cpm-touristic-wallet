@@ -79,6 +79,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                     ],
                   );
                 }
+
                 return Column(
                   children: [
                     const SizedBox(
@@ -184,7 +185,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             ]),
         onRefresh: () async {
           Provider.of<AmountsProvider>(context, listen: false).getTotalAmount(
-              Provider.of<ExchangeRatesProvider>(context, listen: false));
+              Provider.of<ExchangeRatesProvider>(context, listen: false), notify: true);
         });
   }
 }
