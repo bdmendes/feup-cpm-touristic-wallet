@@ -46,24 +46,45 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
     final indicator = Consumer3<AmountsProvider, ExchangeRatesProvider, CurrenciesProvider>(
       builder: (context, amountsProvider, exchangeRatesProvider, currenciesProvider, child) {
         if (amountsProvider.amounts.isEmpty) {
-          return const Column(
-            children: [
-              SizedBox(height: 30,),
-              Text(
-                'No money yet. Add some!',
-                style: TextStyle(fontSize: 25),
-              ),
-            ]
-          );
+          return const Column(children: [
+            SizedBox(
+              height: 30,
+            ),
+            Text(
+              'No money yet. Add some!',
+              style: TextStyle(fontSize: 25),
+            ),
+          ]);
         }
 
         return FutureBuilder(
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-              final lastUpdate = exchangeRatesProvider.getLastUpdateTime() ?? "Never";
+              final lastUpdate =
+                  exchangeRatesProvider.getLastUpdateTime() ?? "Never";
               if (snapshot.hasData) {
+                if (snapshot.data![0] < 0) {
+                  return const Column(
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text('Total amount not available',
+                          style: TextStyle(fontSize: 18)),
+                      Text(
+                        'Connect to the internet or remove newly added currencies',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  );
+                }
                 return Column(
                   children: [
-                    const SizedBox(height: 20,),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -84,7 +105,10 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                               .map<DropdownMenuItem<String>>((Currency currency) {
                             return DropdownMenuItem<String>(
                               value: currency.code,
-                              child: Text(currency.code, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                              child: Text(currency.code,
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
                             );
                           }).toList(),
                           value: amountsProvider.currency,
@@ -94,7 +118,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                             });
                           },
                           buttonStyleData: const ButtonStyleData(
-                            overlayColor: MaterialStatePropertyAll(Colors.transparent),
+                            overlayColor:
+                                MaterialStatePropertyAll(Colors.transparent),
                           ),
                           dropdownStyleData: const DropdownStyleData(
                             maxHeight: 400,
@@ -123,7 +148,9 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                               ),
                             ),
                             searchMatchFn: (item, searchValue) {
-                              return item.value.toString().contains(searchValue.toUpperCase());
+                              return item.value
+                                  .toString()
+                                  .contains(searchValue.toUpperCase());
                             },
                           ),
                           onMenuStateChange: (isOpen) {
@@ -138,16 +165,27 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                   ],
                 );
               }
-                return const CircularProgressIndicator();
+              return const CircularProgressIndicator();
             },
             future: Future.wait([amountsProvider.getTotalAmount(exchangeRatesProvider), currenciesProvider.getCurrencies()]));
       },
     );
-    return SizedBox(
-      height: 130,
-      child: Center(
-        child: indicator,
-      ),
-    );
+
+    return RefreshIndicator(
+        child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            shrinkWrap: true,
+            children: [
+              SizedBox(
+                height: 130,
+                child: Center(
+                  child: indicator,
+                ),
+              )
+            ]),
+        onRefresh: () async {
+          Provider.of<AmountsProvider>(context, listen: false).getTotalAmount(
+              Provider.of<ExchangeRatesProvider>(context, listen: false));
+        });
   }
 }

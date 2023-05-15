@@ -48,7 +48,7 @@ class StatisticsPieChartState extends State {
                           show: false,
                         ),
                         sectionsSpace: 0,
-                        centerSpaceRadius: 30,
+                        centerSpaceRadius: 20,
                         sections:
                             showingSections(amountsProvider, snapshot.data!),
                       ),
@@ -66,7 +66,7 @@ class StatisticsPieChartState extends State {
                 ],
               );
             }
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           });
     });
   }
@@ -99,7 +99,7 @@ class StatisticsPieChartState extends State {
                 '${exchangeAmounts[key]!.toStringAsFixed(2)} ${amountsProvider.currency}',
                 borderColor: Colors.black,
               ),
-        badgePositionPercentageOffset: 1.4,
+        badgePositionPercentageOffset: 1.6,
       );
     });
   }

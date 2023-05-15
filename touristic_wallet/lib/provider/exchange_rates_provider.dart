@@ -59,27 +59,32 @@ class ExchangeRatesProvider extends DatabaseProvider {
       _saveToDatabase(exchangeRate);
       return exchangeRate;
     }).catchError((error) async {
-      return _getFromDatabase(fromCurrency, toCurrency);
+      final exchangeRate = await _getFromDatabase(fromCurrency, toCurrency);
+      if (exchangeRate != null) {
+        _cachedExchangeRates.remove(cachedExchangeRate);
+        _cachedExchangeRates.add(exchangeRate);
+      }
+      return exchangeRate;
     });
   }
 
   Future<ExchangeRate?> _getFromDatabase(
-      String fromCurrency, String toCurrency) {
-    return database.query(
+      String fromCurrency, String toCurrency) async {
+    final exchangeRateData = await database.query(
       'exchange_rates',
       where: 'from_currency = ? AND to_currency = ?',
       whereArgs: [fromCurrency, toCurrency],
-    ).then((value) {
-      if (value.isEmpty) {
-        return null;
-      }
-      return ExchangeRate(
-        value[0]['from_currency'],
-        value[0]['to_currency'],
-        value[0]['rate'],
-        value[0]['date'],
-      );
-    });
+    );
+
+    if (exchangeRateData.isEmpty) {
+      return null;
+    }
+    return ExchangeRate(
+      exchangeRateData[0]['from_currency'],
+      exchangeRateData[0]['to_currency'],
+      exchangeRateData[0]['rate'],
+      exchangeRateData[0]['date'],
+    );
   }
 
   Future<void> _saveToDatabase(ExchangeRate exchangeRate) async {
