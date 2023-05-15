@@ -84,7 +84,16 @@ class CurrenciesProvider extends DatabaseProvider {
     }
   }
 
-  // Currency findCurrency(String code) {
-  //   return _cachedCurrencies.firstWhere((element) => element.code == code);
-  // }
+  Future<Currency?> findCurrency(String code) async {
+    if (_cachedCurrencies.isNotEmpty) {
+      return _cachedCurrencies.firstWhere((element) => element.code == code);
+    }
+
+    final currency = await database.query('currencies', where: 'code = ?', whereArgs: [code]);
+    if (currency.isNotEmpty) {
+      return Currency(currency[0]['code'], currency[0]['name'], currency[0]['type'], currency[0]['icon']);
+    }
+
+    return null;
+  }
 }
