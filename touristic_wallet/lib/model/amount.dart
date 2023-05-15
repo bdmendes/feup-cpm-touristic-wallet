@@ -1,5 +1,6 @@
 import 'dart:math';
-import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 
 class Amount {
   int? id;
@@ -9,8 +10,15 @@ class Amount {
 
   Amount(this.value, String currency, {this.id})
       : currency = currency.trim().toUpperCase(),
-        color = Color(Random().nextInt(0xffffffff)).withAlpha(0xff),
+        color = getColor(currency),
         assert(value >= 0);
+
+  static Color getColor(String currency) {
+    final color = HSVColor.fromAHSV(1, 360 / 26 * (currency.codeUnitAt(0) - 65),
+        0.5 + 0.5 * cos(360 / 26 * (currency.codeUnitAt(1) - 65)), 1);
+
+    return color.toColor();
+  }
 
   Map<String, dynamic> toMap() {
     return {

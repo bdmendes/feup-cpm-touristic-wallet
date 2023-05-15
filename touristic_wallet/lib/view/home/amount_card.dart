@@ -29,10 +29,10 @@ class AmountCardState extends State<AmountCard> {
         margin: const EdgeInsets.all(10),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Stack(
-          alignment: Alignment.centerRight,
+          alignment: Alignment.centerLeft,
           children: [
             Positioned(
-              right: -15,
+              right: -7,
               child: FutureBuilder(
                   future: currenciesProvider.findCurrency(widget.amount.currency),
                   builder: (context, snapshot) {
@@ -51,7 +51,6 @@ class AmountCardState extends State<AmountCard> {
                           blendMode: BlendMode.dstIn,
                           child: CachedNetworkImage(
                             height: 120,
-                            width: 200,
                             fit: BoxFit.fill,
                             alignment: Alignment.centerRight,
                             imageUrl: snapshot.data?.icon ?? '',
@@ -63,19 +62,21 @@ class AmountCardState extends State<AmountCard> {
                   }
               ),
             ),
+            Positioned(
+              left: 0,
+              child: Container(
+                width: 10,
+                height: 100,
+                decoration: BoxDecoration(
+                    color: widget.amount.color,
+                    shape: BoxShape.rectangle,
+                ),
+              ),
+            ),
             Padding(
-                padding: const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
+                padding: const EdgeInsets.only(left: 30, right: 10, top: 10, bottom: 10),
                 child: Row(
                   children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      margin: const EdgeInsets.only(right: 20),
-                      decoration: BoxDecoration(
-                        color: widget.amount.color,
-                      shape: BoxShape.circle
-                      ),
-                    ),
                     Text('${widget.amount.value} ${widget.amount.currency}'),
                     const Spacer(),
                     IconButton(
