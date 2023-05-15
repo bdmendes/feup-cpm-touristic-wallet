@@ -43,7 +43,7 @@ class AmountDialogState extends State<AmountDialog> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         child: Container(
           padding: const EdgeInsets.all(20),
-          height: 250,
+          height: 230,
           child: Form(
               key: _formKey,
               child: Column(
@@ -55,7 +55,7 @@ class AmountDialogState extends State<AmountDialog> {
                       style: const TextStyle(fontSize: 20)),
                   const SizedBox(height: 20),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
                         width: 120,
@@ -64,7 +64,8 @@ class AmountDialogState extends State<AmountDialog> {
                             if (value == null || value.isEmpty) {
                               return 'Enter a value';
                             }
-                            if (double.tryParse(value) == null) {
+                            final number = double.tryParse(value);
+                            if (number == null || number <= 0) {
                               return 'Invalid value';
                             }
                             return null;
@@ -73,7 +74,7 @@ class AmountDialogState extends State<AmountDialog> {
                           controller: _valueController,
                           decoration: const InputDecoration(
                             border: UnderlineInputBorder(),
-                            labelText: 'Value',
+                            hintText: 'Value',
                           ),
                         ),
                       ),
@@ -83,6 +84,8 @@ class AmountDialogState extends State<AmountDialog> {
                           child: DropdownButtonFormField2<String>(
                             decoration: const InputDecoration(
                               contentPadding: EdgeInsets.zero,
+                              border: UnderlineInputBorder(),
+                              hintText: 'Currency',
                             ),
                             isExpanded: true,
                             validator: (value) {

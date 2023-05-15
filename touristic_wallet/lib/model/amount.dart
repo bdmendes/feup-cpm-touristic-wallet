@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
+
 const currencies = [
   "EUR",
   "AED",
@@ -174,8 +176,14 @@ class Amount {
 
   Amount(this.value, String currency, {this.id})
       : currency = currency.trim().toUpperCase(),
-        color = Color(Random().nextInt(0xffffffff)).withAlpha(0xff),
-        assert(value >= 0);
+        color = getColor(currency),
+        assert(value >= 0 && currencies.contains(currency));
+
+  static Color getColor(String currency) {
+    final index = currencies.indexOf(currency);
+    final hue = (360 / currencies.length) * (index + 1) * 5 % 360;
+    return HSLColor.fromAHSL(1, hue, 0.5, 0.5).toColor();
+  }
 
   Map<String, dynamic> toMap() {
     return {

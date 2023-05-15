@@ -9,21 +9,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const TotalAmountIndicator(),
-        Expanded(child: Consumer<AmountsProvider>(
-          builder: (context, amountsProvider, child) {
-            return ListView.builder(
-              itemCount: amountsProvider.amounts.length,
-              itemBuilder: (context, index) {
-                final amount = amountsProvider.amounts[index];
-                return AmountCard(amount: amount);
-              },
-            );
+    return Consumer<AmountsProvider>(
+      builder: (context, amountsProvider, child) {
+        return ListView.builder(
+          itemCount: amountsProvider.amounts.length,
+          itemBuilder: (context, index) {
+            final amount = amountsProvider.amounts[index];
+            return AmountCard(amount: amount);
           },
-        )),
-      ],
+        );
+      },
     );
   }
 }

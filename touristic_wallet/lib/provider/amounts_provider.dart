@@ -96,18 +96,16 @@ class AmountsProvider extends DatabaseProvider {
     var totalAmount = 0.0;
 
     for (final amount in _amounts) {
-      if (amount.currency == _currency) {
-        totalAmount += amount.value;
-        continue;
-      }
-
       final exchangeRate = await exchangeRatesProvider.getExchangeRate(
           amount.currency, _currency);
       if (exchangeRate != null) {
         totalAmount += amount.value * exchangeRate.rate;
+      } else {
+        return -1;
       }
     }
 
+    notifyListeners();
     return totalAmount;
   }
 
