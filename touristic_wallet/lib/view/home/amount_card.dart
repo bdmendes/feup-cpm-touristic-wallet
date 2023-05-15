@@ -32,7 +32,7 @@ class AmountCardState extends State<AmountCard> {
           alignment: Alignment.centerLeft,
           children: [
             Positioned(
-              right: -7,
+              right: -6,
               child: FutureBuilder(
                   future: currenciesProvider.findCurrency(widget.amount.currency),
                   builder: (context, snapshot) {
@@ -50,7 +50,7 @@ class AmountCardState extends State<AmountCard> {
                           },
                           blendMode: BlendMode.dstIn,
                           child: CachedNetworkImage(
-                            height: 120,
+                            height: 100,
                             fit: BoxFit.fill,
                             alignment: Alignment.centerRight,
                             imageUrl: snapshot.data?.icon ?? '',
@@ -74,10 +74,10 @@ class AmountCardState extends State<AmountCard> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.only(left: 30, right: 10, top: 10, bottom: 10),
+                padding: const EdgeInsets.only(left: 30, right: 10, top: 5, bottom: 5),
                 child: Row(
                   children: [
-                    Text('${widget.amount.value} ${widget.amount.currency}'),
+                    Text('${widget.amount.value} ${widget.amount.currency}', style: const TextStyle(fontSize: 17)),
                     const Spacer(),
                     IconButton(
                         onPressed: () {

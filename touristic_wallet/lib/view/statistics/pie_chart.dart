@@ -62,6 +62,7 @@ class StatisticsPieChartState extends State {
                           amountsProvider, exchangeRatesProvider)),
                   const SizedBox(
                     width: 28,
+                    height: 20,
                   ),
                 ],
               );
