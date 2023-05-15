@@ -46,11 +46,11 @@ class AmountCardState extends State<AmountCard> {
                                 Colors.black,
                                 Colors.transparent,
                               ],
-                            ).createShader(Rect.fromLTRB(0, 0, rect.width*1.5, rect.height));
+                            ).createShader(Rect.fromLTRB(0, 0, rect.width*3, rect.height));
                           },
                           blendMode: BlendMode.dstIn,
                           child: CachedNetworkImage(
-                            height: 100,
+                            height: 95,
                             fit: BoxFit.fill,
                             alignment: Alignment.centerRight,
                             imageUrl: snapshot.data?.icon ?? '',
@@ -66,7 +66,7 @@ class AmountCardState extends State<AmountCard> {
               left: 0,
               child: Container(
                 width: 10,
-                height: 100,
+                height: 95,
                 decoration: BoxDecoration(
                     color: widget.amount.color,
                     shape: BoxShape.rectangle,
@@ -74,12 +74,13 @@ class AmountCardState extends State<AmountCard> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.only(left: 30, right: 10, top: 5, bottom: 5),
+                padding: const EdgeInsets.only(left: 30, right: 0, top: 5, bottom: 5),
                 child: Row(
                   children: [
                     Text('${widget.amount.value} ${widget.amount.currency}', style: const TextStyle(fontSize: 17)),
                     const Spacer(),
                     IconButton(
+                      padding: const EdgeInsets.only(left: 20),
                         onPressed: () {
                           showDialog(
                               context: context,

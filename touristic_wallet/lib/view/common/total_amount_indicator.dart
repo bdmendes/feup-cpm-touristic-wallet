@@ -43,8 +43,10 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final indicator = Consumer3<AmountsProvider, ExchangeRatesProvider, CurrenciesProvider>(
-      builder: (context, amountsProvider, exchangeRatesProvider, currenciesProvider, child) {
+    final indicator =
+        Consumer3<AmountsProvider, ExchangeRatesProvider, CurrenciesProvider>(
+      builder: (context, amountsProvider, exchangeRatesProvider,
+          currenciesProvider, child) {
         if (amountsProvider.amounts.isEmpty) {
           return const Column(children: [
             SizedBox(
@@ -61,7 +63,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               final lastUpdate =
                   exchangeRatesProvider.getLastUpdateTime() ?? "Never";
-              if (snapshot.hasData) {
+              if (snapshot.hasData &&
+                  snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.data![0] < 0) {
                   return const Column(
                     children: [
@@ -80,6 +83,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                     ],
                   );
                 }
+
                 return Column(
                   children: [
                     const SizedBox(
@@ -102,7 +106,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                           key: _dropdownButtonKey,
                           alignment: Alignment.centerRight,
                           items: snapshot.data?[1]!
-                              .map<DropdownMenuItem<String>>((Currency currency) {
+                              .map<DropdownMenuItem<String>>(
+                                  (Currency currency) {
                             return DropdownMenuItem<String>(
                               value: currency.code,
                               child: Text(currency.code,
@@ -167,7 +172,10 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
               }
               return const CircularProgressIndicator();
             },
-            future: Future.wait([amountsProvider.getTotalAmount(exchangeRatesProvider), currenciesProvider.getCurrencies()]));
+            future: Future.wait([
+              amountsProvider.getTotalAmount(exchangeRatesProvider),
+              currenciesProvider.getCurrencies()
+            ]));
       },
     );
 
@@ -185,7 +193,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             ]),
         onRefresh: () async {
           Provider.of<AmountsProvider>(context, listen: false).getTotalAmount(
-              Provider.of<ExchangeRatesProvider>(context, listen: false));
+              Provider.of<ExchangeRatesProvider>(context, listen: false),
+              notify: true);
         });
   }
 }
