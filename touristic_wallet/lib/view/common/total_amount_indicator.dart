@@ -170,11 +170,21 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
       },
     );
 
-    return SizedBox(
-      height: 130,
-      child: Center(
-        child: indicator,
-      ),
-    );
+    return RefreshIndicator(
+        child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            shrinkWrap: true,
+            children: [
+              SizedBox(
+                height: 130,
+                child: Center(
+                  child: indicator,
+                ),
+              )
+            ]),
+        onRefresh: () async {
+          Provider.of<AmountsProvider>(context, listen: false).getTotalAmount(
+              Provider.of<ExchangeRatesProvider>(context, listen: false));
+        });
   }
 }
