@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:touristic_wallet/provider/amounts_provider.dart';
-import 'package:touristic_wallet/view/common/total_amount_indicator.dart';
 import 'amount_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -12,6 +11,7 @@ class HomePage extends StatelessWidget {
     return Consumer<AmountsProvider>(
       builder: (context, amountsProvider, child) {
         return ListView.builder(
+          padding: const EdgeInsets.only(bottom: 80),
           itemCount: amountsProvider.amounts.length,
           itemBuilder: (context, index) {
             final amount = amountsProvider.amounts[index];

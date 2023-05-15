@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:touristic_wallet/provider/amounts_provider.dart';
+import 'package:touristic_wallet/provider/currencies_provider.dart';
 import 'package:touristic_wallet/provider/exchange_rates_provider.dart';
 import 'package:touristic_wallet/theme.dart';
 import 'package:touristic_wallet/view/common/total_amount_indicator.dart';
@@ -11,6 +12,9 @@ import 'package:touristic_wallet/view/statistics/statistics_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final currenciesProvider = CurrenciesProvider();
+  await currenciesProvider.initDatabase();
 
   final amountsProvider = AmountsProvider();
   await amountsProvider.loadAmountsFromStorage();
@@ -29,6 +33,7 @@ void main() async {
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => exchangeRatesProvider),
       ChangeNotifierProvider(create: (_) => amountsProvider),
+      ChangeNotifierProvider(create: (_) => currenciesProvider),
     ], child: const MyApp()),
   );
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:touristic_wallet/model/amount.dart';
+import 'package:touristic_wallet/provider/currencies_provider.dart';
 import 'package:touristic_wallet/provider/exchange_rates_provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
+import '../../model/currency.dart';
 import '../../provider/amounts_provider.dart';
 
 class TotalAmountIndicator extends StatefulWidget {
@@ -42,8 +43,10 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final indicator = Consumer2<AmountsProvider, ExchangeRatesProvider>(
-      builder: (context, amountsProvider, exchangeRatesProvider, child) {
+    final indicator =
+        Consumer3<AmountsProvider, ExchangeRatesProvider, CurrenciesProvider>(
+      builder: (context, amountsProvider, exchangeRatesProvider,
+          currenciesProvider, child) {
         if (amountsProvider.amounts.isEmpty) {
           return const Column(children: [
             SizedBox(
@@ -57,11 +60,12 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
         }
 
         return FutureBuilder(
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               final lastUpdate =
                   exchangeRatesProvider.getLastUpdateTime() ?? "Never";
-              if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.data! < 0) {
+              if (snapshot.hasData &&
+                  snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.data![0] < 0) {
                   return const Column(
                     children: [
                       SizedBox(
@@ -88,24 +92,29 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        GestureDetector(
+                        const SizedBox(width: 10),
+                        Flexible(child:GestureDetector(
                           onTap: () {
                             openDropdown();
                           },
                           child: Text(
-                            snapshot.data!.toStringAsFixed(2),
-                            style: const TextStyle(fontSize: 45),
+                            snapshot.data![0].toStringAsFixed(2),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            style: const TextStyle(fontSize: 40),
                           ),
-                        ),
-                        const SizedBox(width: 5),
+                        )),
+                        const SizedBox(width: 10),
                         DropdownButton2<String>(
                           key: _dropdownButtonKey,
                           alignment: Alignment.centerRight,
-                          items: currencies
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items: snapshot.data?[1]!
+                              .map<DropdownMenuItem<String>>(
+                                  (Currency currency) {
                             return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value,
+                              value: currency.code,
+                              child: Text(currency.code,
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold)),
@@ -159,6 +168,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                             }
                           },
                         ),
+                        const SizedBox(width: 10),
                       ],
                     ),
                     Text("Last update: $lastUpdate"),
@@ -167,7 +177,10 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
               }
               return const CircularProgressIndicator();
             },
-            future: amountsProvider.getTotalAmount(exchangeRatesProvider));
+            future: Future.wait([
+              amountsProvider.getTotalAmount(exchangeRatesProvider),
+              currenciesProvider.getCurrencies()
+            ]));
       },
     );
 
@@ -177,15 +190,16 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             shrinkWrap: true,
             children: [
               SizedBox(
-                height: 130,
+                height: 120,
                 child: Center(
                   child: indicator,
                 ),
-              )
+              ),
             ]),
         onRefresh: () async {
           Provider.of<AmountsProvider>(context, listen: false).getTotalAmount(
-              Provider.of<ExchangeRatesProvider>(context, listen: false), notify: true);
+              Provider.of<ExchangeRatesProvider>(context, listen: false),
+              notify: true);
         });
   }
 }

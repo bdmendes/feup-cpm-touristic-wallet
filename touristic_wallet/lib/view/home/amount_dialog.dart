@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 import '../../model/amount.dart';
+import '../../model/currency.dart';
 import '../../provider/amounts_provider.dart';
+import '../../provider/currencies_provider.dart';
 
 class AmountDialog extends StatefulWidget {
   const AmountDialog({super.key, this.savedAmount});
@@ -38,6 +40,8 @@ class AmountDialogState extends State<AmountDialog> {
     }
     final amountsProvider =
         Provider.of<AmountsProvider>(context, listen: false);
+    final currenciesProvider =
+        Provider.of<CurrenciesProvider>(context, listen: false);
     return Dialog(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -81,65 +85,78 @@ class AmountDialogState extends State<AmountDialog> {
                       const SizedBox(width: 20),
                       SizedBox(
                           width: 100,
-                          child: DropdownButtonFormField2<String>(
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.zero,
-                              border: UnderlineInputBorder(),
-                              hintText: 'Currency',
-                            ),
-                            isExpanded: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Invalid currency';
-                              }
-                              return null;
-                            },
-                            value: _currency,
-                            items: currencies
-                                .map((e) =>
-                                DropdownMenuItem(value: e, child: Text(e)))
-                                .toList(),
-                            onChanged: (String? value) {
-                              setState(() {
-                                _currency = value;
-                              });
-                            },
-                            dropdownStyleData: const DropdownStyleData(
-                              maxHeight: 250,
-                            ),
-                            buttonStyleData: const ButtonStyleData(
-                              height: 45,
-                            ),
-                            dropdownSearchData: DropdownSearchData(
-                              searchController: _textEditingController,
-                              searchInnerWidgetHeight: 50,
-                              searchInnerWidget: Container(
-                                height: 50,
-                                padding: const EdgeInsets.all(4),
-                                child: TextFormField(
-                                  expands: true,
-                                  maxLines: null,
-                                  controller: _textEditingController,
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.all(8),
-                                    hintText: 'Search',
-                                    hintStyle: const TextStyle(fontSize: 16),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                          child: FutureBuilder(
+                              future: currenciesProvider.getCurrencies(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                  return DropdownButtonFormField2<String>(
+                                    decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.zero,
+                                      border: UnderlineInputBorder(),
+                                      hintText: 'Currency',
                                     ),
-                                  ),
-                                ),
-                              ),
-                              searchMatchFn: (item, searchValue) {
-                                return item.value.toString().contains(searchValue.toUpperCase());
-                              },
-                            ),
-                            onMenuStateChange: (isOpen) {
-                              if (!isOpen) {
-                                _textEditingController.clear();
-                              }
-                            },
+                                    isExpanded: true,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Invalid currency';
+                                      }
+                                      return null;
+                                    },
+                                    value: _currency,
+                                    items: snapshot.data!.map<DropdownMenuItem<String>>((Currency currency) {
+                                      return DropdownMenuItem<String>(
+                                        value: currency.code,
+                                        child: Text(currency.code),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _currency = value;
+                                      });
+                                    },
+                                    dropdownStyleData: const DropdownStyleData(
+                                      maxHeight: 250,
+                                    ),
+                                    buttonStyleData: const ButtonStyleData(
+                                      height: 45,
+                                    ),
+                                    dropdownSearchData: DropdownSearchData(
+                                      searchController: _textEditingController,
+                                      searchInnerWidgetHeight: 50,
+                                      searchInnerWidget: Container(
+                                        height: 50,
+                                        padding: const EdgeInsets.all(4),
+                                        child: TextFormField(
+                                          expands: true,
+                                          maxLines: null,
+                                          controller: _textEditingController,
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            contentPadding: const EdgeInsets.all(8),
+                                            hintText: 'Search',
+                                            hintStyle: const TextStyle(fontSize: 16),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      searchMatchFn: (item, searchValue) {
+                                        return item.value.toString().contains(searchValue.toUpperCase());
+                                      },
+                                    ),
+                                    onMenuStateChange: (isOpen) {
+                                      if (!isOpen) {
+                                        _textEditingController.clear();
+                                      }
+                                    },
+                                  );
+                                }
+                                return const SizedBox(
+                                    width: 100,
+                                    child: Center(
+                                        child: CircularProgressIndicator())
+                                );}
                           )),
                     ],
                   ),
