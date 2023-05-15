@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 import '../../model/amount.dart';
 import '../../model/currency.dart';
@@ -21,6 +22,13 @@ class AmountDialogState extends State<AmountDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _valueController = TextEditingController();
   String? _currency;
+  final TextEditingController _textEditingController = TextEditingController();
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +59,7 @@ class AmountDialogState extends State<AmountDialog> {
                       style: const TextStyle(fontSize: 20)),
                   const SizedBox(height: 20),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       SizedBox(
                         width: 120,
@@ -79,7 +88,11 @@ class AmountDialogState extends State<AmountDialog> {
                               future: currenciesProvider.getCurrencies(),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                                  return DropdownButtonFormField(
+                                  return DropdownButtonFormField2<String>(
+                                    decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.zero,
+                                    ),
+                                    isExpanded: true,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return 'Invalid currency';
@@ -87,8 +100,7 @@ class AmountDialogState extends State<AmountDialog> {
                                       return null;
                                     },
                                     value: _currency,
-                                    items: snapshot.data!
-                                        .map<DropdownMenuItem<String>>((Currency currency) {
+                                    items: snapshot.data!.map<DropdownMenuItem<String>>((Currency currency) {
                                       return DropdownMenuItem<String>(
                                         value: currency.code,
                                         child: Text(currency.code),
@@ -98,6 +110,42 @@ class AmountDialogState extends State<AmountDialog> {
                                       setState(() {
                                         _currency = value;
                                       });
+                                    },
+                                    dropdownStyleData: const DropdownStyleData(
+                                      maxHeight: 250,
+                                    ),
+                                    buttonStyleData: const ButtonStyleData(
+                                      height: 45,
+                                    ),
+                                    dropdownSearchData: DropdownSearchData(
+                                      searchController: _textEditingController,
+                                      searchInnerWidgetHeight: 50,
+                                      searchInnerWidget: Container(
+                                        height: 50,
+                                        padding: const EdgeInsets.all(4),
+                                        child: TextFormField(
+                                          expands: true,
+                                          maxLines: null,
+                                          controller: _textEditingController,
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            contentPadding: const EdgeInsets.all(8),
+                                            hintText: 'Search',
+                                            hintStyle: const TextStyle(fontSize: 16),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      searchMatchFn: (item, searchValue) {
+                                        return item.value.toString().contains(searchValue.toUpperCase());
+                                      },
+                                    ),
+                                    onMenuStateChange: (isOpen) {
+                                      if (!isOpen) {
+                                        _textEditingController.clear();
+                                      }
                                     },
                                   );
                                 }
