@@ -14,8 +14,8 @@ class Amount {
         assert(value >= 0);
 
   static Color getColor(String currency) {
-    final color = HSVColor.fromAHSV(1, 360 / 26 * (currency.codeUnitAt(0) - 65),
-        0.5 + 0.5 * cos(360 / 26 * (currency.codeUnitAt(1) - 65)), 0.8);
+    Random random = Random(currency.hashCode);
+    final color = HSVColor.fromAHSV(1, random.nextDouble() * 360, 0.3 + 0.7 * random.nextDouble(), 0.8);
 
     return color.toColor();
   }
