@@ -1,5 +1,9 @@
 # Practical Assignment #2 - My touristic wallet in Flutter
 
+<p align="center">
+    <img alt="icon" src="docs/icon.png" style="max-height: 200px;" >
+</p>
+
 By:
 - Bruno Mendes [up201906166](mailto:up201906166@edu.fe.up.pt)
 - Fernando Rego [up201905951](mailto:up201905951@edu.fe.up.pt)
@@ -24,12 +28,12 @@ The app has 2 main screens: the home screen and the statistics screen.
 
 ### Home Screen
 
-Here the user can see their current balance using a base currency and manage the amounts of each currency they have. They can also add new currencies to their wallet by tapping the floating action button. They can also update the amount they have of each currency by tapping the edit button or remove a currency by tapping the delete button.
+Here the user can see their current balance using a base currency and manage the amounts of each currency they have. They can also add new currencies to their wallet by tapping the floating action button. For each currency in their wallet, the user can update the amount they have by tapping the edit button or remove a currency by tapping the delete button.
 
-Pulling down on the total balance will refresh the exchange rates and update it accordingly.
+Pulling down on the total balance will refresh the exchange rates and update the values accordingly.
 
 <p align="center">
-    <img alt="home screen" src="docs/img/home_screen.png" style="height: 1000px;" >
+    <img alt="home screen" src="docs/img/home_screen.png" style="max-height: 1000px;" >
 </p>
 
 ### Statistics Screen
@@ -40,7 +44,7 @@ The statistics screen allows the user to visually understand how much each curre
 | -------------- | -------------- |
 ![statistics screen bar chart](docs/img/statistics_bar.png) | ![statistics screen pie chart](docs/img/statistics_pie.png) |
 
-Two charts are available: a bar chart and a pie chart. The bar chart shows the total amount of each currency in the wallet and the pie chart shows the size of the slice of each currency in the wallet.
+Two charts are available: a bar chart and a pie chart. The bar chart shows the total amount of each currency in the wallet while the pie chart shows what percentage of the wallet is made up of each currency.
 
 The pie chart is interactive, allowing the user to hold on a currency to zoom on it.
 
@@ -54,20 +58,20 @@ The user can add as many currencies as they want to their wallet. The app will a
 To add new currencies simply tap the floating action button on the home screen, then, on the newly open dialog, input the amount you have of the currency and select the currency from the dropdown menu, then hit save.
 
 <p align="center">
-    <img alt="add currency dialog" src="docs/img/new_currency.png" style="height: 500px; text-align: center;" >
+    <img alt="add currency dialog" src="docs/img/new_currency.png" style="max-height: 500px; text-align: center;" >
 </p>
 
-Updating the amount of a currency is done by tapping the edit button on the currency card and inputting the new amount. To delete a currency, simply tap the delete button on the currency card and confirm the deletion.
+Updating the amount of a currency is done by tapping the edit button on the currency card and inputting the new amount or by just adding more of that currency. To delete a currency, simply tap the delete button on the currency card and confirm the deletion.
 
 ### Dynamic base currency
 
-The user is not limited to a single base currency. They can change the base currency at any time by tapping the edit button on the base currency card and selecting the new base currency from the dropdown menu. Their balance will be updated with the amount they own of each currency in relation to the new base currency.
+The user is not limited to a single base currency. They can change the base currency at any time by tapping the base currency card and selecting the new currency from the dropdown menu. Their balance will be updated with the amount they own of each currency in relation to the new base currency.
 
 ### Persisted data
 
-The user's wallet is persisted across app restarts and device reboots. The data is stored in a local database using the `sqflite` package.
+The user's entire wallet is persisted across app restarts and device reboots. The data is stored in a local database using the `sqflite` package.
 
-The app can also be used offline, as long as the user has no need to add new currencies, update the base currency or update the exchange rates.
+The app can also be used offline with the rates from when the user was last online.
 
 ### Currency visualization
 
@@ -79,6 +83,18 @@ The provided charts help the user keep track of how much each currency is worth 
 ### Currency flags
 
 Each currency is represented by its flag in the currency cards in order to make it easier for the user to identify each currency.
+
+### Adaptive Icon
+
+We used the `flutter_launcher_icons` package to create an adaptive icon for both iOS and Android. We also added a Themed Icon for Android manually.
+
+### Splash Screen
+
+We used the `flutter_native_splash` package to create a splash screen that is equal for both platforms, iOS and Android.
+
+### Dark Mode
+
+The app supports both light and dark mode, according to the user's system preferences.
 
 ## Performed Tests
 We have tested the app thorougly with manual acceptance tests and across several devices with different Android API levels (32, 33, 34(Beta) ). 
