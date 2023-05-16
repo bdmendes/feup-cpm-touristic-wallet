@@ -14,8 +14,7 @@ class ExchangeRatesProvider extends DatabaseProvider {
             'exchange_rates.db',
             '''CREATE TABLE exchange_rates '''
                 '''(id INTEGER PRIMARY KEY, '''
-                '''from_currency TEXT, '''
-                '''to_currency TEXT, '''
+                '''currency TEXT, '''
                 '''date TEXT, '''
                 '''rate REAL)''');
 
@@ -23,21 +22,24 @@ class ExchangeRatesProvider extends DatabaseProvider {
 
   final List<ExchangeRate> _cachedExchangeRates = [];
 
-  Future<ExchangeRate?> getExchangeRate(
+  Future<double?> getExchangeRate(
       String fromCurrency, String toCurrency) async {
     if (fromCurrency == toCurrency) {
-      return ExchangeRate(
-          fromCurrency, toCurrency, 1, DateTime.now().toString());
+      return 1;
     }
 
-    final cachedExchangeRate = _cachedExchangeRates.firstWhere(
-        (element) =>
-            element.fromCurrency == fromCurrency &&
-            element.toCurrency == toCurrency,
-        orElse: () => ExchangeRate(
-            fromCurrency, toCurrency, 0, DateTime.now().toString()));
-    if (cachedExchangeRate.rate != 0) {
-      return cachedExchangeRate;
+    final cachedFromCurrencyExchangeRate = _cachedExchangeRates.firstWhere(
+        (element) => element.currency == fromCurrency && element.rate != 0,
+        orElse: () => ExchangeRate(fromCurrency, 0, DateTime.now().toString()));
+
+    final cachedToCurrencyExchangeRate = _cachedExchangeRates.firstWhere(
+        (element) => element.currency == toCurrency && element.rate != 0,
+        orElse: () => ExchangeRate(toCurrency, 0, DateTime.now().toString()));
+
+    if (cachedFromCurrencyExchangeRate.rate != 0 &&
+        cachedToCurrencyExchangeRate.rate != 0) {
+      return cachedToCurrencyExchangeRate.rate /
+          cachedFromCurrencyExchangeRate.rate;
     }
 
     final url = Uri.parse(
@@ -47,57 +49,79 @@ class ExchangeRatesProvider extends DatabaseProvider {
         throw Exception('Failed to load exchange rate');
       }
       final data = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
-      final fromCurrencyRate = double.tryParse(data['rates']?[fromCurrency]);
-      final toCurrencyRate = double.tryParse(data['rates']?[toCurrency]);
-      final date = data['date'];
-      if (fromCurrencyRate == null || toCurrencyRate == null || date == null) {
+
+      for (final entry in data['rates'].entries) {
+        final rate = double.tryParse(entry.value) ?? 0;
+        if (rate == 0) {
+          continue;
+        }
+
+        final currency = entry.key;
+        _cachedExchangeRates
+            .removeWhere((exchangeRate) => exchangeRate.currency == currency);
+        _cachedExchangeRates.add(ExchangeRate(currency, rate, data['date']));
+      }
+
+      _saveToDatabase(_cachedExchangeRates);
+
+      final fromCurrencyRate = _cachedExchangeRates.firstWhere(
+          (exchangeRate) => exchangeRate.currency == fromCurrency,
+          orElse: () =>
+              ExchangeRate(fromCurrency, 0, DateTime.now().toString()));
+      final toCurrencyRate = _cachedExchangeRates.firstWhere(
+          (exchangeRate) => exchangeRate.currency == toCurrency,
+          orElse: () => ExchangeRate(toCurrency, 0, DateTime.now().toString()));
+      if (fromCurrencyRate.rate == 0 || toCurrencyRate.rate == 0) {
         return null;
       }
-      final exchangeRate = ExchangeRate(fromCurrency, toCurrency, toCurrencyRate / fromCurrencyRate, date);
-      _cachedExchangeRates.remove(cachedExchangeRate);
-      _cachedExchangeRates.add(exchangeRate);
-      _saveToDatabase(exchangeRate);
-      return exchangeRate;
+
+      return toCurrencyRate.rate / fromCurrencyRate.rate;
     }).catchError((error) async {
-      final exchangeRate = await _getFromDatabase(fromCurrency, toCurrency);
-      if (exchangeRate != null) {
-        _cachedExchangeRates.remove(cachedExchangeRate);
-        _cachedExchangeRates.add(exchangeRate);
+      final fromCurrencyExchangeRate = await _getFromDatabase(fromCurrency);
+      final toCurrencyExchangeRate = await _getFromDatabase(toCurrency);
+      if (fromCurrencyExchangeRate != null) {
+        _cachedExchangeRates.removeWhere(
+            (exchangeRate) => exchangeRate.currency == fromCurrency);
+        _cachedExchangeRates.add(fromCurrencyExchangeRate);
       }
-      return exchangeRate;
+
+      if (toCurrencyExchangeRate != null) {
+        _cachedExchangeRates
+            .removeWhere((exchangeRate) => exchangeRate.currency == toCurrency);
+        _cachedExchangeRates.add(toCurrencyExchangeRate);
+      }
+
+      return toCurrencyExchangeRate!.rate / fromCurrencyExchangeRate!.rate;
     });
   }
 
-  Future<ExchangeRate?> _getFromDatabase(
-      String fromCurrency, String toCurrency) async {
+  Future<ExchangeRate?> _getFromDatabase(String currency) async {
     final exchangeRateData = await database.query(
       'exchange_rates',
-      where: 'from_currency = ? AND to_currency = ?',
-      whereArgs: [fromCurrency, toCurrency],
+      where: 'currency = ?',
+      whereArgs: [currency],
     );
 
     if (exchangeRateData.isEmpty) {
       return null;
     }
     return ExchangeRate(
-      exchangeRateData[0]['from_currency'],
-      exchangeRateData[0]['to_currency'],
+      exchangeRateData[0]['currency'],
       exchangeRateData[0]['rate'],
       exchangeRateData[0]['date'],
     );
   }
 
-  Future<void> _saveToDatabase(ExchangeRate exchangeRate) async {
-    await database.delete(
-      'exchange_rates',
-      where: 'from_currency = ? AND to_currency = ?',
-      whereArgs: [exchangeRate.fromCurrency, exchangeRate.toCurrency],
-    );
-    return database.insert(
-      'exchange_rates',
-      exchangeRate.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  Future<void> _saveToDatabase(List<ExchangeRate> exchangeRates) async {
+    await database.delete('exchange_rates');
+
+    for (final exchangeRate in exchangeRates) {
+      await database.insert(
+        'exchange_rates',
+        exchangeRate.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 
   String? getLastUpdateTime() {

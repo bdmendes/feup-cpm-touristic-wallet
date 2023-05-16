@@ -99,7 +99,7 @@ class AmountsProvider extends DatabaseProvider {
       final exchangeRate = await exchangeRatesProvider.getExchangeRate(
           amount.currency, _currency);
       if (exchangeRate != null) {
-        totalAmount += amount.value * exchangeRate.rate;
+        totalAmount += amount.value * exchangeRate;
       } else {
         return -1;
       }
@@ -123,7 +123,7 @@ class AmountsProvider extends DatabaseProvider {
       final exchangeRate = await exchangeRatesProvider.getExchangeRate(
           amount.currency, _currency);
       if (exchangeRate != null) {
-        exchangeAmounts[amount.currency] = amount.value * exchangeRate.rate;
+        exchangeAmounts[amount.currency] = amount.value * exchangeRate;
       }
     }
 
