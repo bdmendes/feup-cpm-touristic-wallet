@@ -63,6 +63,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               final lastUpdate =
                   exchangeRatesProvider.getLastUpdateTime() ?? "Never";
+              final dropdownValueToShow =
+                  snapshot.data?[1].firstWhere((element) => element.code == amountsProvider.currency);
               if (snapshot.hasData &&
                   snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.data![0] < 0) {
@@ -120,8 +122,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                                       fontWeight: FontWeight.bold)),
                             );
                           }).toList(),
-                          value: "${snapshot.data?[1].firstWhere((element) => element.code == amountsProvider.currency).code}"
-                              "+${snapshot.data?[1].firstWhere((element) => element.code == amountsProvider.currency).name}",
+                          value: "${dropdownValueToShow.code}+${dropdownValueToShow.name}",
                           onChanged: (String? newValue) {
                             setState(() {
                               amountsProvider.currency = newValue!.split("+")[0];

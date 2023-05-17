@@ -88,6 +88,7 @@ class AmountDialogState extends State<AmountDialog> {
                           child: FutureBuilder(
                               future: currenciesProvider.getCurrencies(),
                               builder: (context, snapshot) {
+                                final dropdownValueToShow = _currency != null ? snapshot.data?.firstWhere((element) => element.code == _currency) : null;
                                 if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                                   return DropdownButtonFormField2<String>(
                                     decoration: const InputDecoration(
@@ -108,8 +109,7 @@ class AmountDialogState extends State<AmountDialog> {
                                         child: Text(currency.code),
                                       );
                                     }).toList(),
-                                    value: _currency != null ? "${snapshot.data?.firstWhere((element) => element.code == _currency).code}"
-                                        "+${snapshot.data?.firstWhere((element) => element.code == _currency).name}" : null,
+                                    value: _currency != null ? "${dropdownValueToShow?.code}+${dropdownValueToShow?.name}" : null,
                                     onChanged: (String? value) {
                                       setState(() {
                                         _currency = value!.split('+')[0];
