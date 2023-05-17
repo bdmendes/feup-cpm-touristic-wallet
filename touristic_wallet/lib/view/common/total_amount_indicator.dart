@@ -63,6 +63,8 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               final lastUpdate =
                   exchangeRatesProvider.getLastUpdateTime() ?? "Never";
+              final dropdownValueToShow =
+                  snapshot.data?[1].firstWhere((element) => element.code == amountsProvider.currency);
               if (snapshot.hasData &&
                   snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.data![0] < 0) {
@@ -113,17 +115,17 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                               .map<DropdownMenuItem<String>>(
                                   (Currency currency) {
                             return DropdownMenuItem<String>(
-                              value: currency.code,
+                              value: "${currency.code}+${currency.name}",
                               child: Text(currency.code,
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold)),
                             );
                           }).toList(),
-                          value: amountsProvider.currency,
+                          value: "${dropdownValueToShow.code}+${dropdownValueToShow.name}",
                           onChanged: (String? newValue) {
                             setState(() {
-                              amountsProvider.currency = newValue!;
+                              amountsProvider.currency = newValue!.split("+")[0];
                             });
                           },
                           buttonStyleData: const ButtonStyleData(
@@ -158,7 +160,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                             ),
                             searchMatchFn: (item, searchValue) {
                               return item.value
-                                  .toString()
+                                  .toString().toUpperCase()
                                   .contains(searchValue.toUpperCase());
                             },
                           ),

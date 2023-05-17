@@ -88,6 +88,7 @@ class AmountDialogState extends State<AmountDialog> {
                           child: FutureBuilder(
                               future: currenciesProvider.getCurrencies(),
                               builder: (context, snapshot) {
+                                final dropdownValueToShow = _currency != null ? snapshot.data?.firstWhere((element) => element.code == _currency) : null;
                                 if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                                   return DropdownButtonFormField2<String>(
                                     decoration: const InputDecoration(
@@ -102,16 +103,16 @@ class AmountDialogState extends State<AmountDialog> {
                                       }
                                       return null;
                                     },
-                                    value: _currency,
                                     items: snapshot.data!.map<DropdownMenuItem<String>>((Currency currency) {
                                       return DropdownMenuItem<String>(
-                                        value: currency.code,
+                                        value: "${currency.code}+${currency.name}",
                                         child: Text(currency.code),
                                       );
                                     }).toList(),
+                                    value: _currency != null ? "${dropdownValueToShow?.code}+${dropdownValueToShow?.name}" : null,
                                     onChanged: (String? value) {
                                       setState(() {
-                                        _currency = value;
+                                        _currency = value!.split('+')[0];
                                       });
                                     },
                                     dropdownStyleData: const DropdownStyleData(
@@ -142,7 +143,8 @@ class AmountDialogState extends State<AmountDialog> {
                                         ),
                                       ),
                                       searchMatchFn: (item, searchValue) {
-                                        return item.value.toString().contains(searchValue.toUpperCase());
+                                        return item.value.toString().toUpperCase()
+                                            .contains(searchValue.toUpperCase());
                                       },
                                     ),
                                     onMenuStateChange: (isOpen) {
