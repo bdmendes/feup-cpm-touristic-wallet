@@ -113,17 +113,18 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                               .map<DropdownMenuItem<String>>(
                                   (Currency currency) {
                             return DropdownMenuItem<String>(
-                              value: currency.code,
+                              value: "${currency.code}+${currency.name}",
                               child: Text(currency.code,
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold)),
                             );
                           }).toList(),
-                          value: amountsProvider.currency,
+                          value: "${snapshot.data?[1].firstWhere((element) => element.code == amountsProvider.currency).code}"
+                              "+${snapshot.data?[1].firstWhere((element) => element.code == amountsProvider.currency).name}",
                           onChanged: (String? newValue) {
                             setState(() {
-                              amountsProvider.currency = newValue!;
+                              amountsProvider.currency = newValue!.split("+")[0];
                             });
                           },
                           buttonStyleData: const ButtonStyleData(
@@ -158,7 +159,7 @@ class TotalAmountIndicatorState extends State<TotalAmountIndicator> {
                             ),
                             searchMatchFn: (item, searchValue) {
                               return item.value
-                                  .toString()
+                                  .toString().toUpperCase()
                                   .contains(searchValue.toUpperCase());
                             },
                           ),
