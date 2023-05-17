@@ -55,7 +55,7 @@ The pie chart is interactive, allowing the user to hold on a currency to zoom on
 
 The user can add as many currencies as they want to their wallet. The app will automatically fetch the exchange rates from the API and update the balance accordingly.
 
-To add new currencies simply tap the floating action button on the home screen, then, on the newly open dialog, input the amount to add and select the currency from the dropdown menu, then hit save. To make the currency selection easier you can also search by typing in the dropdown.
+To add new currencies simply tap the floating action button on the home screen, then, on the newly open dialog, input the amount to add and select the currency from the dropdown menu, then hit save. To make the currency selection easier you can also search by typing the code or currency name in the dropdown.
 
 <p align="center">
     <img alt="add currency dialog" src="docs/img/new_currency.png" style="max-height: 500px; text-align: center;" >
